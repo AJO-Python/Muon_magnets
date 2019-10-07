@@ -27,6 +27,7 @@ class muon:
         self.pos = np.array(position, dtype="float64")
         self.vel = np.array(velocity, dtype="float64")
         self.accel = np.array([0, 0, 0], dtype="float64")
+
         
 
 class positron:
@@ -85,7 +86,7 @@ def muon_accel(mu, field):
     return accel
 
 
-def get_magnitude(vector):
+def get_mag(vector):
     """
     Returns magnitude of 3-d vector
     """
@@ -96,38 +97,108 @@ def get_gauss(tesla):
     return (tesla/1e4)
 
 
+def get_unit_vec(vector):
+    return vector / get_mag(vector)
+
+
+def decay(mu, time, dt):
+    decay_const = 1/mu.halflife
+    decay_prob = decay_const * np.exp((-decay_const * time))
+    return decay_prob*dt
+
+    
+#%%
 # =============================================================================
 # Main
 # =============================================================================
 field = np.array(mag_field(500000, np.pi/2))
 
+# Creates random particles
 #particles = []
 #for i in range(1):
     #rand_pos, rand_vel = np.random.randint(-1000, 1000, size=(2, 3))
     #particles.append(muon(rand_pos, rand_vel))
+
+# Setting up a standard muon
 pos = [2*np.pi, 0, 0]
-vel = [0.1, 0, 0.1]
+vel = [1.0, 0, 1.0]
 m1 = muon(pos, vel)
 m1.accel = muon_accel(m1, field)
-dt = 0.5
-count = 5000
+
+omega = larmor_freq(field, m1.gamma_u)
+
+
+
+
+plt.figure(3)
+dt = 4e-6/50
+decay_prob = []
+x_space = np.linspace(0, 4e-6, 50)
+for i in x_space:
+    decay_prob.append(decay(m1, i, dt))
+    #plt.scatter(i, decay_prob[-1])
+
+#plt.plot(x_space, decay_prob)
+n, bins, patches = plt.hist(decay_prob, bins=50, density=True, cumulative=True)
+plt.xlim(-1e-6, 5e-6)
+
+
+
+
+
+# Setting up simulation
+dt = 0.05
+count = 50
 N = int(count/dt)
 m1_pos = np.zeros([N, 3], dtype="float64")
 i=0
 while i < N:
-    m1.accel = muon_accel(m1, field)
-    m1.vel += m1.accel*dt
+    m1.vel += 0.5*m1.accel*dt
     m1.pos += m1.vel*dt
+    m1.accel = muon_accel(m1, field)
+    m1.vel += 0.5*m1.accel*dt
+    
     m1_pos[i] = m1.pos
     i += 1
 
+#%%
 # =============================================================================
 # Plotting
 # =============================================================================
-x = m1_pos[0]
+fig = plt.figure(2)
+ax = fig.add_subplot(111, projection="3d")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
 
 
-fig = plt.figure(1)
-ax = fig.add_subplot(111, projection='3d')
+ax.plot3D(m1_pos[:,0], m1_pos[:,1], m1_pos[:,2],
+          label="Muon")
 
-ax.plot3D(m1_pos[:,0], m1_pos[:,1], m1_pos[:,2])
+
+"""
+Plotting the direction of the magnetic field
+"""
+x_min_max = [min(m1_pos[:,0]), max(m1_pos[:,0])]
+y_min_max = [min(m1_pos[:,1]), max(m1_pos[:,1])]
+z_min_max = [min(m1_pos[:,2]), max(m1_pos[:,2])]
+
+
+
+x_scale = abs(x_min_max[1] - x_min_max[0])
+y_scale = abs(y_min_max[1] - y_min_max[0])
+z_scale = abs(z_min_max[1] - z_min_max[0])
+unit_field = get_unit_vec(field)
+ax.plot3D([0, unit_field[0]*0.5*x_scale],
+          [0, unit_field[1]*0.5*y_scale],
+          [0, unit_field[2]*0.5*z_scale],
+          linestyle="--", label="B_field")
+ax.legend(loc="best")
+
+
+
+
+
+
+
+
