@@ -45,7 +45,7 @@ def larmor_freq(mag_field, gyro_ratio):
     """
     Returns Larmor frequency
     """
-    return mag_field * gyro_ratio
+    return get_mag(mag_field) * gyro_ratio
 
 
 def pos_emit_dir(asym, theta):
@@ -116,6 +116,12 @@ def inv_decay(decay_const, U):
     Takes a number U={0, 1} and returns decay time
     """
     return -(np.log(U)) / U
+
+def mag_precession(mag_x, w, t):
+    return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
+
+def kubo_toyabe(t, w, theta):
+    return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
 #%%
 # =============================================================================
 # Main
@@ -126,7 +132,7 @@ def inv_decay(decay_const, U):
     #rand_pos, rand_vel = np.random.randint(-1000, 1000, size=(2, 3))
     #particles.append(muon(rand_pos, rand_vel))
 
-field = np.array(mag_field(500000, np.pi/2))
+field = np.array(mag_field(500000, 0))
 
 
 # Setting up a standard muon
@@ -136,12 +142,19 @@ m1 = muon(pos, vel)
 m1.accel = muon_accel(m1, field)
 
 omega = larmor_freq(field, m1.gamma_u)
-lifetime = inv_decay(m1.decay_const, np.random.rand())
 
+plt.figure()
+for j in np.linspace(0, 2*np.pi, 100):
+    result = list()
+    for i in np.linspace(0, 1e-13, 1000):
+        result.append(kubo_toyabe(i, omega, j))
 
+    plt.plot(result)
 
-
-
+#%%
+#==============================================================================
+# 
+#==============================================================================
 """
 # Setting up simulation
 dt = 0.1
