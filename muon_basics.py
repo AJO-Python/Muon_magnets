@@ -30,7 +30,7 @@ class muon:
 
 
 class positron:
-    def __init__(self, ):
+    def __init__(self):
         self.mass = 9.10938356e-31
         self.charge = 1
         self.mass_energy = 0.5109989461e6
@@ -125,16 +125,12 @@ def mag_precession(mag_x, w, t):
 
 def kubo_toyabe(t, w, theta):
     return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
+
+
 #%%
 # =============================================================================
 # Main
 # =============================================================================
-# Creates random particles
-#particles = []
-#for i in range(1):
-    #rand_pos, rand_vel = np.random.randint(-1000, 1000, size=(2, 3))
-    #particles.append(muon(rand_pos, rand_vel))
-
 field = np.array(mag_field(1e-4, 0))
 
 m1 = muon()
