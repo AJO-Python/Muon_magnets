@@ -14,12 +14,12 @@ from mpl_toolkits.mplot3d import Axes3D
 # Classes
 # =============================================================================
 class muon:
-    def __init__(self, position, velocity):
+    def __init__(self):
 
         self.mass = 1.883531627e-28
         self.charge = 1
         self.mass_energy = 105.6583745e6 # In MeV
-        self.halflife = 2296.9811 # In nano seconds e-9
+        self.halflife = 2296.9811e-9 # In nano seconds e-9
         self.spin = 0.5
         self.gamma_u = 2*np.pi*135.5e6
         self.decay_const = np.log(2)/self.halflife
@@ -28,7 +28,6 @@ class muon:
         self.vel = np.array(velocity, dtype="float64")
         self.accel = np.array([0, 0, 0], dtype="float64")
 
-        
 
 class positron:
     def __init__(self, ):
@@ -103,14 +102,15 @@ def get_unit_vec(vector):
 
 
 def decay(mu, time):
-    decay_const = np.log(2)/mu.halflife
-    decay_prob = decay_const * np.exp((-decay_const * time))
+    decay_prob = mu.decay_const * np.exp((-mu.decay_const * time))
     return decay_prob
+
 """
 def decay(decay_const, time):
     decay_prob = 1 - np.exp(-decay_const * time)
     return decay_prob
 """
+
 def inv_decay(decay_const, U):
     """
     Inverse of the decay equation
@@ -118,8 +118,10 @@ def inv_decay(decay_const, U):
     """
     return -(np.log(U)) / U
 
+
 def mag_precession(mag_x, w, t):
     return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
+
 
 def kubo_toyabe(t, w, theta):
     return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
@@ -133,14 +135,9 @@ def kubo_toyabe(t, w, theta):
     #rand_pos, rand_vel = np.random.randint(-1000, 1000, size=(2, 3))
     #particles.append(muon(rand_pos, rand_vel))
 
-field = np.array(mag_field(1, 0))
+field = np.array(mag_field(1e-4, 0))
 
-
-# Setting up a standard muon
-pos = [2*np.pi, 200, 0.5]
-vel = [1.0, 0.0, 1.0]
-m1 = muon(pos, vel)
-m1.accel = muon_accel(m1, field)
+m1 = muon()
 
 omega = larmor_freq(field, m1.gamma_u)
 forward, backward, for_time, back_time, both = list(), list(), list(), list(), list()
@@ -198,64 +195,6 @@ plt.title("Polarisation as a function of theta and time")
 plt.xlabel("Time (1e-9 s)")
 plt.ylabel("Polarisation ($\sigma$)")
 plt.grid()
-#%%
-#==============================================================================
-# 
-#==============================================================================
-
-# Setting up simulation
-dt = 0.1
-count = 10000
-N = int(count/dt)
-m1_pos = np.zeros([N, 3], dtype="float64")
-i=0
-while i < N:
-    m1.vel += 0.5*m1.accel*dt
-    m1.pos += m1.vel*dt
-    m1.accel = muon_accel(m1, field)
-    m1.vel += 0.5*m1.accel*dt
-    
-    m1_pos[i] = m1.pos
-    i += 1
-
-#%%
-
-
-# =============================================================================
-# Plotting
-# =============================================================================
-fig = plt.figure()
-ax = fig.add_subplot(111, projection="3d")
-ax.set_xlabel("X")
-ax.set_ylabel("Y")
-ax.set_zlabel("Z")
-
-
-ax.plot3D(m1_pos[:,0], m1_pos[:,1], m1_pos[:,2],
-          label="Muon")
-
-
-"""
-#Plotting the direction of the magnetic field
-"""
-x_min_max = [min(m1_pos[:,0]), max(m1_pos[:,0])]
-y_min_max = [min(m1_pos[:,1]), max(m1_pos[:,1])]
-z_min_max = [min(m1_pos[:,2]), max(m1_pos[:,2])]
-
-
-
-x_scale = abs(x_min_max[1] - x_min_max[0])
-y_scale = abs(y_min_max[1] - y_min_max[0])
-z_scale = abs(z_min_max[1] - z_min_max[0])
-unit_field = get_unit_vec(field)
-ax.plot3D([0, unit_field[0]*0.5*x_scale],
-          [0, unit_field[1]*0.5*y_scale],
-          [0, unit_field[2]*0.5*z_scale],
-          linestyle="--", label="B_field")
-ax.legend(loc="lower right")
-plt.title("Single Muon moving in B-field with initial velocity in x, z")
-
-
 
 
 
