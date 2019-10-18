@@ -24,9 +24,9 @@ class muon:
         self.gamma_u = 2*np.pi*135.5e6
         self.decay_const = np.log(2)/self.halflife
         
-        self.pos = np.array(position, dtype="float64")
-        self.vel = np.array(velocity, dtype="float64")
-        self.accel = np.array([0, 0, 0], dtype="float64")
+        #self.pos = np.array(position, dtype="float64")
+        #self.vel = np.array(velocity, dtype="float64")
+        #self.accel = np.array([0, 0, 0], dtype="float64")
 
 
 class positron:
@@ -123,9 +123,17 @@ def mag_precession(mag_x, w, t):
     return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
 
 
-def kubo_toyabe(t, w, theta):
+def angular_precession(t, w, theta):
     return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
 
+
+def polarisation(decay_const, time):
+    """
+    Lorentzian Kubo-Toyabe
+    """
+    lam_t = decay_const * time
+    result = (1/3) + ((2/3)*(1-lam_t)*np.exp(-lam_t))
+    return result
 
 #%%
 # =============================================================================
@@ -139,8 +147,8 @@ omega = larmor_freq(field, m1.gamma_u)
 forward, backward, for_time, back_time, both = list(), list(), list(), list(), list()
 for particle in range(int(2e5)):
     lifetime = inv_decay(m1.decay_const, np.random.rand())
-    polarisation = kubo_toyabe(lifetime, omega, np.pi*2/3)
-    if polarisation >= 0:
+    P = angular_precession(lifetime, omega, np.pi*2/3)
+    if P >= 0:
         forward.append(lifetime)
         for_time.append(lifetime)
     else:
@@ -178,20 +186,30 @@ plt.grid()
 # Precession of polarisation
 #==============================================================================
 line = list(["-", "-.", "--", "--", "-.", "--", "-", "-", "-.", "--", "-", "-.", "--"])
-theta_list = list([0, np.pi/3, np.pi/2, np.pi, np.pi*2/3, np.pi*2])
-#theta_list = list([0, np.pi/3, np.pi/2, np.pi])
+#theta_list = list([0, np.pi/3, np.pi/2, np.pi, np.pi*2/3, np.pi*2])
+theta_list = list([0, np.pi/6, np.pi/4, np.pi/3, np.pi/2])
+time_array = np.linspace(0, 100e-6, 1000)
 plt.figure()
 for i, theta in enumerate(theta_list):
     result = list()
-    for t in np.linspace(0, 0.2e-13, 1000):
-        result.append(kubo_toyabe(t, omega, theta))
+    for t in time_array:
+        result.append(angular_precession(t, omega, theta))
     plt.plot(result, label="{:.2f}$\pi$".format(theta/np.pi), linestyle=np.random.choice(line), alpha=1)
 plt.legend(loc="best")
 plt.title("Polarisation as a function of theta and time")
-plt.xlabel("Time (1e-9 s)")
+plt.xlabel("Time ({:.1e})".format(max(time_array)))
 plt.ylabel("Polarisation ($\sigma$)")
 plt.grid()
 
-
-
-
+#%%
+plt.figure()
+plt.title("Kubo-Toyabe Relaxation in zero field")
+plt.xlabel("Time")
+plt.ylabel("Polarisation")
+plt.grid()
+for angle in [1]:
+    polar = list()
+    for t in time_array:
+        current_P = polarisation(m1.decay_const, t)
+        polar.append(current_P)
+    plt.plot(polar)
