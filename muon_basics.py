@@ -23,7 +23,7 @@ class muon:
         self.spin = 0.5
         self.gamma_u = 2*np.pi*135.5e6
         self.decay_const = np.log(2)/self.halflife
-        
+        self.life = inv_decay(self.decay_const, np.random.rand())
         #self.pos = np.array(position, dtype="float64")
         #self.vel = np.array(velocity, dtype="float64")
         #self.accel = np.array([0, 0, 0], dtype="float64")
@@ -139,14 +139,16 @@ def polarisation(decay_const, time):
 # =============================================================================
 # Main
 # =============================================================================
-field = np.array(mag_field(1e-4, 0))
+field = np.array(mag_field(1e-5, 0))
 
 m1 = muon()
 
 omega = larmor_freq(field, m1.gamma_u)
 forward, backward, for_time, back_time, both = list(), list(), list(), list(), list()
-for particle in range(int(2e5)):
-    lifetime = inv_decay(m1.decay_const, np.random.rand())
+for particle in range(int(2e6)):
+    temp_particle = muon()
+    lifetime = temp_particle.life
+    #lifetime = inv_decay(m1.decay_const, np.random.rand())
     P = angular_precession(lifetime, omega, np.pi*2/3)
     if P >= 0:
         forward.append(lifetime)
@@ -164,23 +166,17 @@ n_b, b_b, _ = plt.hist(backward, histtype="step",
                        bins=1000, label="Backward", range=(0, 50))
 n_a, b_a, _ = plt.hist(both, histtype="step",
                        bins=1000, label="Combined", range=(0, 50))
-#plt.yscale("log")
-plt.xlim(0, 10)
-plt.title("Histogram of particle lifetime (N=2e6, theta=2$\pi$3)")
-plt.xlabel("Lifetime (ns)")
-plt.ylabel("Frequency")
-plt.legend(loc="best")
-plt.grid()
-plt.figure()
+
 plt.plot(b_f[:-1], n_f, label="Forward")
 plt.plot(b_b[:-1], n_b, label="Backward")
 plt.plot(b_a[:-1], n_a, label="Both")
 plt.xlim(0, 10)
 plt.title("Plot of particles detected against time (N=2e5, theta=2$\pi$3)")
-plt.xlabel("Lifetime (ns)")
+plt.xlabel("Lifetime ($\mu$s)")
 plt.ylabel("Frequency")
 plt.legend(loc="best")
 plt.grid()
+plt.savefig("Images/lifetime_hist")
 #%%
 #==============================================================================
 # Precession of polarisation
@@ -200,6 +196,7 @@ plt.title("Polarisation as a function of theta and time")
 plt.xlabel("Time ({:.1e})".format(max(time_array)))
 plt.ylabel("Polarisation ($\sigma$)")
 plt.grid()
+plt.savefig("Images/Polarisation_theta")
 
 #%%
 plt.figure()
@@ -213,3 +210,7 @@ for angle in [1]:
         current_P = polarisation(m1.decay_const, t)
         polar.append(current_P)
     plt.plot(polar)
+plot_name = "KuboToyabeRelaxation_ZeroField"
+plt.savefig("Images/{}".format(plot_name))
+
+
