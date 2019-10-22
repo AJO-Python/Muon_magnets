@@ -12,12 +12,19 @@ def asym(Nf, Nb):
     """
     Returns the assymetry of the measurement
     """
-    Nb = abs(Nb)
-    Nf = abs(Nf)
+    if Nf < 0 or Nb < 0:
+        print("Negative dectection is not possible. Check func.asym()\nUsing abs(value) now")
+        Nf = abs(Nf)
+        Nb = abs(Nb)
     try:
         return (Nf - Nb) / (Nb + Nf)
     except ZeroDivisionError:
-        return 0
+        if Nf == 0 and Nb == 0:
+            return 0
+        else:
+            return 1
+
+
 def get_mag(vector):
     """
     Returns magnitude of 3-d vector
