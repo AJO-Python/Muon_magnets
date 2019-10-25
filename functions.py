@@ -4,9 +4,8 @@ import numpy as np
 def larmor_freq(mag_field, gyro_ratio):
     """
     Returns Larmor frequency
-    gyro = Hz T^-1
     """
-    return abs(gyro_ratio * mag_field)
+    return abs(mag_field * gyro_ratio)
 
 
 def asym(Nf, Nb):
@@ -14,7 +13,8 @@ def asym(Nf, Nb):
     Returns the assymetry of the measurement
     """
     if Nf < 0 or Nb < 0:
-        print("Negative dectection is not possible. Check func.asym()\nUsing abs(value) now")
+        print("Negative dectection is not possible. Check func.asym()")
+        print("Converting to abs(value) now...")
         Nf = abs(Nf)
         Nb = abs(Nb)
     try:
@@ -45,6 +45,7 @@ def decay(mu, time):
     decay_prob = mu.decay_const * np.exp((-mu.decay_const * time))
     return decay_prob
 
+
 """
 def decay(decay_const, time):
     decay_prob = 1 - np.exp(-decay_const * time)
@@ -56,7 +57,7 @@ def mag_precession(mag_x, w, t):
     return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
 
 
-def spin_polarisation(t, w, theta):
+def angular_precession(t, w, theta):
     return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
 
 
