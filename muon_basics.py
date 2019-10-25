@@ -11,16 +11,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-import Modules as func
+import Modules.functions as func
 from Modules.muon import Muon
-from Modules import positron
+from Modules.positron import Positron
 
 #%%
 # =============================================================================
 # Main
 # =============================================================================
 plt.figure()
-x = np.zeros(int(1e5))
+x = np.zeros(int(1e4))
 for i in range(len(x)):
     x[i] = Muon().lifetime
 plt.hist(x, range=[0, 10],
@@ -42,12 +42,12 @@ plt.show()
 # Forward and Backward detection of simple precession
 # =============================================================================
 m1 = Muon()
-omega_larmor = func.larmor_freq(0.001, m1.gamma_u)
+omega_larmor = func.larmor_freq(1, m1.gamma_u)
 forward, backward, for_time, back_time, both = list(), list(), list(), list(), list()
 for particle in range(int(2e5)):
     temp_particle = Muon()
     lifetime = temp_particle.lifetime
-    P = func.angular_precession(lifetime, omega_larmor, 0)
+    P = np.sin(omega_larmor * lifetime)
     if P >= 0:
         forward.append(lifetime)
         for_time.append(lifetime)
@@ -57,25 +57,27 @@ for particle in range(int(2e5)):
     both.append(lifetime)
 
 #%%
-plt.figure()
+#plt.figure()
 n_f, b_f, _ = plt.hist(forward, histtype="step",
                        bins=1000, label="Forward", range=(0, 20e-6))
 n_b, b_b, _ = plt.hist(backward, histtype="step",
                        bins=1000, label="Backward", range=(0, 20e-6))
 n_a, b_a, _ = plt.hist(both, histtype="step",
                        bins=1000, label="Combined", range=(0, 20e-6))
-
+plt.title("Histogram")
+plt.grid()
+#%%
 plt.figure()
 plt.plot(b_f[:-1], n_f, label="Forward")
 plt.plot(b_b[:-1], n_b, label="Backward")
 plt.plot(b_a[:-1], n_a, label="Both")
-#plt.xlim(0, 1)
-plt.title("")
+plt.title("Line graph")
 plt.xlabel("Lifetime ($\mu$s)")
 plt.ylabel("Frequency")
 plt.legend(loc="best")
 plt.grid()
-plt.xlabel("Time ({:2e})".format(max(both)))
+plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+plt.xlabel("Time (s)")
 #plt.savefig("Images/lifetime_hist")
 #%%
 #==============================================================================
