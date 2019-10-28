@@ -20,21 +20,22 @@ from Modules.positron import Positron
 # Main
 # =============================================================================
 plt.figure()
-x = np.zeros(int(1e4))
+x = np.zeros(int(1e5))
 for i in range(len(x)):
     x[i] = Muon().lifetime
-plt.hist(x, range=[0, 10],
+plt.hist(x, range=[0, 20e-6],
          bins=1000,
          histtype="step",
          cumulative=True)
 plt.annotate(s="Target Halflife",
-             xy=[2.2, 0], xytext=[2.2, 80000],
+             xy=[2.2e-6, 0], xytext=[2.2e-6, 80000],
              arrowprops={"width":0, "headwidth":0})
 plt.annotate(s="Actual Halflife",
-             xy=[0, 40000], xytext=[6, 40000],
+             xy=[0, 40000], xytext=[6e-6, 40000],
              arrowprops={"width":0, "headwidth":0})
 plt.xlabel("Time of decay ($\mu$s)")
 plt.ylabel("Frequency")
+plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
 plt.grid()
 plt.show()
 #%%
