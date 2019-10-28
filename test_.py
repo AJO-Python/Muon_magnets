@@ -51,7 +51,8 @@ def test_asym():
     assert func.asym(1, 1) == 0
     assert func.asym(1, 0) == 1
     assert func.asym(-1, -1) == 0
+    assert func.asym(-1, 0) == 1
 
 
-def test_polarisation():
+def test_decay():
     pass
