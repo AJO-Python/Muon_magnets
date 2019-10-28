@@ -1,8 +1,11 @@
-import numpy as np
-#from Modules.muon import Muon
+import Modules
 
-decay_const = np.log(2)/2.2969811e-6
+np = Modules.np
+
 gyro_ratio = 2*np.pi*135.5e6
+halflife = 2.2969811e-6
+decay_const = np.log(2)/halflife
+
 def larmor_freq(mag_field):
     """
     Returns Larmor frequency

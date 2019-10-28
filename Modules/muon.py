@@ -1,4 +1,4 @@
-import numpy as np
+from Modules import *
 import Modules.functions as func
 
 class Muon:
@@ -6,7 +6,7 @@ class Muon:
     charge = 1
     mass_energy = 105.6583745e6
     halflife = 2.2969811e-6
-    gamma_u = 2*np.pi*135.5e6
+    gyro_ratio = 2*np.pi*135.5e6
     decay_const = np.log(2)/halflife
     
     def __init__(self):
@@ -23,7 +23,7 @@ class Muon:
         return -(np.log(U)) / Muon.decay_const
     
     def get_spin_polarisation(self, field, theta):
-        w = func.larmor_freq(field, Muon.gamma_u)
+        w = func.larmor_freq(field)
         t = self.lifetime
         return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
     
