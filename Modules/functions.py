@@ -1,7 +1,12 @@
-import numpy as np
+import Modules
 
+np = Modules.np
 
-def larmor_freq(mag_field, gyro_ratio):
+gyro_ratio = 2*np.pi*135.5e6
+halflife = 2.2969811e-6
+decay_const = np.log(2)/halflife
+
+def larmor_freq(mag_field):
     """
     Returns Larmor frequency
     """
@@ -13,7 +18,8 @@ def asym(Nf, Nb):
     Returns the assymetry of the measurement
     """
     if Nf < 0 or Nb < 0:
-        print("Negative dectection is not possible. Check func.asym()\nUsing abs(value) now")
+        print("Negative dectection is not possible. Check func.asym()")
+        print("Converting to abs(value) now...")
         Nf = abs(Nf)
         Nb = abs(Nb)
     try:
@@ -40,17 +46,16 @@ def mag_force(q, v, B):
     return q*(np.cross(v, B))
 
 
-def decay(mu, time):
-    decay_prob = mu.decay_const * np.exp((-mu.decay_const * time))
+def decay(time):
+    decay_prob = (decay_const * np.exp((-decay_const * time)))
     return decay_prob
+
 
 """
 def decay(decay_const, time):
     decay_prob = 1 - np.exp(-decay_const * time)
     return decay_prob
 """
-
-
 
 
 def mag_precession(mag_x, w, t):
@@ -61,7 +66,7 @@ def angular_precession(t, w, theta):
     return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
 
 
-def polarisation(decay_const, time):
+def polarisation(time):
     """
     Lorentzian Kubo-Toyabe
     """
