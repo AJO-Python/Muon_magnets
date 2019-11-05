@@ -20,6 +20,9 @@ class Muon:
         Inverse of the decay equation
         Takes a number U={0, 1} and returns decay time
         """
+        if U > 1:
+            raise ValueError("U must be in range {0, 1}")
+        if U == 0: U = 1e-9
         return -(np.log(U)) / Muon.decay_const
     
     def get_spin_polarisation(self, field, theta):
@@ -29,4 +32,4 @@ class Muon:
     
     def get_decay_orientation(self, field):
         """Return orientation as total revolutions"""
-        return func.larmor_freq(field)*self.lifetime
+        return func.larmor_freq(field)*self.lifetime / np.pi*2

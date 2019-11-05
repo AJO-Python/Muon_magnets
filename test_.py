@@ -5,13 +5,13 @@ Author: Anthony J Owen
 Muon project
 """
 import pytest
-import Modules.muon as muon
-import Modules.positron as positron
+from Modules import Muon, Positron
 import Modules.functions as func
 import numpy as np
 
 
 def test_get_mag():
+    print("Testing func.get_mag...")
     # Check basic functionality
     assert func.get_mag([1, 0, 0]) == 1
     # Check negatives handled
@@ -21,6 +21,7 @@ def test_get_mag():
 
 
 def test_mag_force():
+    print("Testing func.mag_force...")
     q = 1
     v = [1, 0, 0]
     B = [0, 1, 0]
@@ -37,15 +38,17 @@ def test_mag_force():
 
 
 def test_larmor_freq():
+    print("Testing func.larmor_freq...")
     # Test simple case
-    assert func.larmor_freq(1, 2) == 2
+    assert func.larmor_freq(1) == Muon.gyro_ratio
     # Test negative handling
-    assert func.larmor_freq(-1, 2) == 2
+    assert func.larmor_freq(-1) == Muon.gyro_ratio
     # Test small numbers
-    assert pytest.approx(func.larmor_freq(1e-9, 0.5e-4)) == 0.5e-13
+    assert pytest.approx(func.larmor_freq(1e-9)) == 1e-9 * Muon.gyro_ratio
 
 
 def test_asym():
+    print("Testing func.asym...")
     assert func.asym(0, 0) == 0
     assert func.asym(0, 1) == -1
     assert func.asym(1, 1) == 0
@@ -55,4 +58,20 @@ def test_asym():
 
 
 def test_decay():
+    print("Testing func.decay...")
     pass
+
+class test_Muon():
+    particle = Muon()
+    def test_inv_decay():
+        assert particle.lifetime
+        for U in [0, 0.1, 0.5, 0.9, 1]:
+            life = particle.inv_decay(U)
+            assert life >= 0
+            assert type(life) == np.float64
+        with pytest.raises(ValueError):
+            assert particle.inv_decay(2)
+
+    def test_get_decay_orientation():
+        assert particle.get_decay_orientation(1) == particle.gyro_ratio * particle.lifetime
+
