@@ -1,6 +1,4 @@
-import Modules
-
-np = Modules.np
+import numpy as np
 
 gyro_ratio = 2*np.pi*135.5e6
 halflife = 2.2969811e-6

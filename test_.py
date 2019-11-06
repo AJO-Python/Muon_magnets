@@ -5,7 +5,8 @@ Author: Anthony J Owen
 Muon project
 """
 import pytest
-from Modules import Muon, Positron
+from Modules.muon import Muon
+from Modules.positron import Positron
 import Modules.functions as func
 import numpy as np
 
@@ -49,29 +50,39 @@ def test_larmor_freq():
 
 def test_asym():
     print("Testing func.asym...")
-    assert func.asym(0, 0) == 0
-    assert func.asym(0, 1) == -1
-    assert func.asym(1, 1) == 0
-    assert func.asym(1, 0) == 1
-    assert func.asym(-1, -1) == 0
-    assert func.asym(-1, 0) == 1
+    assert func.asym(1, 0) == 1  # Only forwards
+    assert func.asym(0, 1) == -1  # Only backwards
+    assert func.asym(1, 1) == 0  # Numerator == 0
+    assert func.asym(0, 0) == 0  # Denominator == 0
+    assert func.asym(-1, 0) == 1  # One negative
+    assert func.asym(-1, -1) == 0  # Both negative
 
 
 def test_decay():
     print("Testing func.decay...")
     pass
 
-class test_Muon():
-    particle = Muon()
-    def test_inv_decay():
-        assert particle.lifetime
-        for U in [0, 0.1, 0.5, 0.9, 1]:
-            life = particle.inv_decay(U)
-            assert life >= 0
-            assert type(life) == np.float64
-        with pytest.raises(ValueError):
-            assert particle.inv_decay(2)
 
-    def test_get_decay_orientation():
-        assert particle.get_decay_orientation(1) == particle.gyro_ratio * particle.lifetime
+def test_Muon():
+    print("Testing Muon class...")
+    particle = Muon()
+    assert particle.charge == 1
+    assert pytest.approx(particle.decay_const) == 301764.424861809
+    assert pytest.approx(particle.gyro_ratio) == 851371609.122834
+    assert particle.mass_energy == 105.6583745e6
+    #assert particle.lifetime > 0 and particle.lifetime < 1e-3
+
+
+def test_inv_decay():
+    particle = Muon()
+    for U in [0, 0.1, 0.5, 0.9, 1]:
+        life = particle.inv_decay(U)
+        assert life >= 0
+        assert type(life) == np.float64
+    with pytest.raises(ValueError):
+        assert particle.inv_decay(2)
+
+def test_get_decay_orientation():
+    particle = Muon()
+    assert particle.get_decay_orientation(1) == particle.gyro_ratio * particle.lifetime
 
