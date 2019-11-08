@@ -1,25 +1,27 @@
 import numpy as np
 
-gyro_ratio = 2*np.pi*135.5e6
-halflife = 2.2969811e-6
-decay_const = np.log(2)/halflife
+gyro_ratio = 2*np.pi*135.5e6  # Radians per second per Tesla (rad s^-1 T^-1)
+halflife = 2.2969811e-6  # Seconds
+decay_const = np.log(2)/halflife  # Seconds
 
 def larmor_freq(mag_field):
     """
-    Returns Larmor frequency
+    Returns Larmor frequency as rad s^-1
     """
     return abs(mag_field * gyro_ratio)
 
 
 def asym(Nf, Nb):
     """
-    Returns the assymetry of the measurement
+    Returns the asymmetry of the measurement
     """
+    # Catching and reporting negative detection
     if Nf < 0 or Nb < 0:
         print("Negative dectection is not possible. Check func.asym()")
         print("Converting to abs(value) now...")
         Nf = abs(Nf)
         Nb = abs(Nb)
+    
     try:
         return (Nf - Nb) / (Nb + Nf)
     except ZeroDivisionError:
@@ -71,3 +73,6 @@ def polarisation(time):
     lam_t = decay_const * time
     result = (1/3) + ((2/3)*(1-lam_t)*np.exp(-lam_t))
     return result
+
+def count_asym(a0, omega, t):
+    return a0 * np.cos(omega*t)

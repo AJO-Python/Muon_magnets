@@ -13,6 +13,7 @@ class Muon:
         """
         All values for muons in SI units
         """
+        # Setting each muon to have unique lifetime based on exponential decay function
         self.lifetime = float(self.inv_decay(np.random.rand(1)))
 
     def inv_decay(self, U):
@@ -22,15 +23,20 @@ class Muon:
         """
         if U > 1:
             raise ValueError("U must be in range {0, 1}")
-        if U == 0:
+        if U == 0:  # Stopping inf from taking log of 0
             U = 1e-9
         return -(np.log(U)) / Muon.decay_const
 
     def get_spin_polarisation(self, field, theta):
+        """
+        Returns polarisation as function of field strength and angle from muon spin dir
+        """
         w = func.larmor_freq(field)
         t = self.lifetime
         return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
 
     def get_decay_orientation(self, field):
-        """Return orientation as total revolutions"""
-        return func.larmor_freq(field)*self.lifetime / np.pi*2
+        """
+        Return orientation as total radians
+        """
+        return func.larmor_freq(field)*self.lifetime
