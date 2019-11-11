@@ -38,6 +38,15 @@ def get_mag(vector):
     return np.sqrt((vector[0]**2 + vector[1]**2 + vector[2]**2))
 
 
+def get_angle(vec1, vec2):
+    """
+    Gets angle between vectors of shape (N,1) as theta {-pi2, pi/2}
+    """
+    dot = sum(x*y for x,y in zip(vec1, vec2))
+    mag1, mag2 = get_mag(vec1), get_mag(vec2)
+    return np.arccos(dot / (mag1*mag2))
+
+
 def mag_force(q, v, B):
     """
     Returns magnetic force
