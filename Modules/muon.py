@@ -13,10 +13,9 @@ class Muon:
 
     def __init__(self):
         """
-        All values for muons in SI units
+        Initialises each muon object with a lifetime
         """
-        # Setting each muon to have unique lifetime based on exponential decay function
-        self.lifetime = float(self.inv_decay(np.random.rand(1)))
+        self.get_lifetime(np.random.rand(1))
        
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3):
         """
@@ -25,52 +24,57 @@ class Muon:
         field_dir must be x,y,z vector
         Defaults to: 1mT field in +x direction + 0 phase
         """
-        self.get_larmor(field_strength)
         self.spin_field_angle = func.get_angle(self.spin_dir, field_dir)
-        self.get_decay_orientation(phase=0)
+        self.get_larmor(field_strength)
+        self.get_decay_orientation()
         self.get_spin_polarisation()
         
-    def inv_decay(self, U):
+    def get_lifetime(self, U):
         """
         Inverse of the decay equation
         Takes a number U={0, 1} and returns decay time
         """
-        if U > 1:
+        if U >= 1:
             raise ValueError("U must be in range {0, 1}")
-        if U == 0:  # Stopping inf from taking log of 0
+        if U == 0:  # ln(0) -> inf so set to some small value
             U = 1e-9
-        return -(np.log(U)) / Muon.decay_const
+        self.lifetime = -(np.log(U)) / Muon.decay_const
 
     def get_random_phase(self):
         """Sets phase to random angle"""
-        self.phase = np.rand.uniform(0, 2*np.pi)
+        self.phase = np.random.uniform(0, 2*np.pi)
 
     def get_larmor(self, field_mag):
-        """Returns omega_l in radians"""
-        self.larmor = field_mag * self.gyro_ratio
+        """Returns larmor frequency in radians per second"""
+        self.larmor = abs(field_mag) * self.gyro_ratio
 
     def get_spin_polarisation(self):
         """
         Returns polarisation as function of field strength
-        and angle from muon spin dir
+        and angle from muon spin direction
         """
-        theta = self.spin_field_angle
-        w = self.larmor
-        t = self.lifetime
-        p = self.phase
-        self.polarisation = np.cos(theta)**2 +
+        try:
+            theta = self.spin_field_angle
+            w = self.larmor
+            t = self.lifetime
+            p = self.phase
+        except AttributeError:
+            print("spin_field_angle, larmor, lifetime, and phase must be defined before calling get_spin_polarisation")
+        
+        self.polarisation = (np.cos(theta)**2 +
             (np.sin(theta)**2) *
-            np.cos(w*t+p)
+            np.cos(w*t+p))
 
     def get_decay_orientation(self):
         """Return orientation at decay as total radians"""
         self.total_rads = self.larmor*self.lifetime + self.phase
 
-    def get_asym(self, a0, larmor):
+    def get_asym(self, a0):
         """
         Returns asymmetry
         """
-        if a0 <= -1 or a0 >= 1:
+        if a0 < -1 or a0 > 1:
             print("a0 out of range {-1, 1}")
             return 0
-        return a0 * np.cos(self.larmor) * self.lifetime
+        asym = 1 + a0 * np.cos(self.spin_field_angle)
+        self.asym = asym

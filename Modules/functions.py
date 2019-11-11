@@ -11,7 +11,7 @@ def larmor_freq(mag_field):
     return abs(mag_field * gyro_ratio)
 
 
-def asym(Nf, Nb):
+def detect_asym(Nf, Nb):
     """
     Returns the asymmetry of the measurement
     """
@@ -88,9 +88,9 @@ def count_asym(a0, omega, t):
     return a0 * np.cos(omega*t)
 
 
-def format_plot(max_time=20e-6):
-    plt.legend(loc="best")
-    plt.xlim(0, max_time)
-    plt.grid()
-    plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
-    plt.show()
+def format_plot(fig, max_time=20e-6):
+    fig.legend(loc="best")
+    fig.xlim(0, max_time)
+    fig.grid()
+    fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+    fig.show()
