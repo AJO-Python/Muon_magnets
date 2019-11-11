@@ -83,5 +83,14 @@ def polarisation(time):
     result = (1/3) + ((2/3)*(1-lam_t)*np.exp(-lam_t))
     return result
 
+
 def count_asym(a0, omega, t):
     return a0 * np.cos(omega*t)
+
+
+def format_plot(max_time=20e-6):
+    plt.legend(loc="best")
+    plt.xlim(0, max_time)
+    plt.grid()
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+    plt.show()
