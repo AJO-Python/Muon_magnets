@@ -92,7 +92,7 @@ plt.figure()
 for i, theta in enumerate(theta_list):
     result = list()
     for t in time_array:
-        result.append(Muon().get_spin_polarisation(0.001, theta))
+        result.append(Muon().get_spin_polarisation(0.0001, theta))
     plt.plot(result, label="{:.2f}$\pi$".format(theta/np.pi), linestyle=np.random.choice(line), alpha=1)
 plt.legend(loc="best")
 plt.title("Polarisation as a function of theta and time")

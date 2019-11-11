@@ -40,3 +40,13 @@ class Muon:
         Return orientation as total radians
         """
         return func.larmor_freq(field)*self.lifetime
+
+    def get_larmor(self, field):
+            return abs(field)*self.gyro_ratio
+
+
+    def get_asym(self, a0, larmor):
+        if type(larmor) != float:
+            print("Larmor not float")
+            return 0
+        return a0 * np.cos(float(larmor) * self.lifetime)

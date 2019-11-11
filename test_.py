@@ -86,3 +86,5 @@ def test_get_decay_orientation():
     particle = Muon()
     assert particle.get_decay_orientation(1) == particle.gyro_ratio * particle.lifetime
 
+def test_get_asym():
+    
