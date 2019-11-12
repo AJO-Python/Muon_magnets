@@ -11,7 +11,7 @@ def larmor_freq(mag_field):
     return abs(mag_field * gyro_ratio)
 
 
-def asym(Nf, Nb):
+def detect_asym(Nf, Nb):
     """
     Returns the asymmetry of the measurement
     """
@@ -38,6 +38,15 @@ def get_mag(vector):
     return np.sqrt((vector[0]**2 + vector[1]**2 + vector[2]**2))
 
 
+def get_angle(vec1, vec2):
+    """
+    Gets angle between vectors of shape (N,1) as theta {-pi2, pi/2}
+    """
+    dot = sum(x*y for x,y in zip(vec1, vec2))
+    mag1, mag2 = get_mag(vec1), get_mag(vec2)
+    return np.arccos(dot / (mag1*mag2))
+
+
 def mag_force(q, v, B):
     """
     Returns magnetic force
@@ -49,13 +58,6 @@ def mag_force(q, v, B):
 def decay(time):
     decay_prob = (decay_const * np.exp((-decay_const * time)))
     return decay_prob
-
-
-"""
-def decay(decay_const, time):
-    decay_prob = 1 - np.exp(-decay_const * time)
-    return decay_prob
-"""
 
 
 def mag_precession(mag_x, w, t):
@@ -74,5 +76,14 @@ def polarisation(time):
     result = (1/3) + ((2/3)*(1-lam_t)*np.exp(-lam_t))
     return result
 
+
 def count_asym(a0, omega, t):
     return a0 * np.cos(omega*t)
+
+
+def format_plot(fig, max_time=20e-6):
+    fig.set_xlim(0, max_time)
+    fig.set_ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+    plt.grid()
+    plt.legend(loc="best")
+    plt.show()

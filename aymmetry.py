@@ -19,12 +19,13 @@ from scipy.optimize import curve_fit
 N = 1000
 field = 1e-3
 particles = [Muon() for _ in range(N)]
-
+for p in particles:
+    p.apply_field(field_dir=[1,1,0])
+    p.get_kubo_toyabe(0.5)
 lifetimes = list(map(lambda p: p.lifetime, particles))
-asym = list(map(lambda p: p.get_asym(1/3, p.get_larmor(field)), particles))
-
-
+rads = list(map(lambda p: p.total_rads % 2*np.pi, particles))
+kt = list(map(lambda p: p.kt, particles))
 plt.figure()
-plt.scatter(lifetimes, asym)
+plt.scatter(lifetimes, kt)
 plt.xlim(0, 20e-6)
 plt.show()
