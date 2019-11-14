@@ -60,13 +60,6 @@ def decay(time):
     return decay_prob
 
 
-"""
-def decay(decay_const, time):
-    decay_prob = 1 - np.exp(-decay_const * time)
-    return decay_prob
-"""
-
-
 def mag_precession(mag_x, w, t):
     return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
 

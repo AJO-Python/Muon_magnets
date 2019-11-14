@@ -6,8 +6,8 @@ class Positron:
         self.mass_energy = 0.5109989461e6
         self.spin = 0.5
 
-    def emit_dir(asym, theta):
+    def emit_dir(a0, theta):
         """
         Returns the direction of emitted positron
         """
-        return 1 + asym*np.cos(theta)
+        return 1 + a0*np.cos(theta)
