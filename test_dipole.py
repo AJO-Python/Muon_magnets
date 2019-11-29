@@ -7,7 +7,7 @@ Created on Thu Nov 28 17:16:57 2019
 
 import numpy as np
 import pytest
-import dipole
+from Modules.dipole import Dipole
 
 def test_dipole():
     Dipole.count = 0
@@ -34,4 +34,4 @@ def test_dipole():
 def test_mag_field():
     dipole = Dipole(orientation=0, location=[0,0,0], strength=1)
     field = dipole.get_mag_field([2,0,0])
-    assert field == 
+    assert field == 2
