@@ -87,42 +87,42 @@ def get_mag(vector):
 def get_dir_2d(vector):
     return np.arctan(vector[1]/vector[0])
 
+if __name__=="__main__":
+    # Create a dipole
+    dip_1 = Dipole(orientation=90, location=[0, 0, 0], strength=1e-6)
+    dip_1.moment = np.array([0, 8e-8, 0])
+    print(dip_1)
 
-# Create a dipole
-dip_1 = Dipole(orientation=90, location=[0, 0, 0], strength=1e-6)
-dip_1.moment = np.array([0, 8e-8, 0])
-print(dip_1)
+    # Creating an x,y grid to test magnetic field on
+    Nx, Ny = 200, 200
+    side_length = 80e-6
+    x_grid = np.linspace(-side_length, side_length, Nx)
+    y_grid = np.linspace(-side_length, side_length, Ny)
 
-# Creating an x,y grid to test magnetic field on
-Nx, Ny = 200, 200
-side_length = 80e-6
-x_grid = np.linspace(-side_length, side_length, Nx)
-y_grid = np.linspace(-side_length, side_length, Ny)
+    # Creating grids to store the field values and directions
+    field_x = np.zeros([Nx, Ny])
+    field_y = np.zeros_like(field_x)
+    field_z = np.zeros_like(field_x)
 
-# Creating grids to store the field values and directions
-field_x = np.zeros([Nx, Ny])
-field_y = np.zeros_like(field_x)
-field_z = np.zeros_like(field_x)
+    # Loop over points in grid and get field at each point
+    try:
+        for i, x in enumerate(x_grid):
+            for j, y in enumerate(y_grid):
+                field_at_point = dip_1.get_mag_field(target=[x, y, 1e-6])
+                field_x[i][j] = field_at_point[0]
+                field_y[i][j] = field_at_point[1]
+                field_z[i][j] = field_at_point[2]
+    except TypeError as e:
+        print("======ERROR======")
+        print("i, x", i, x)
+        print("j, y", j, y)
+        print(field_at_point)
+        raise
 
-# Loop over points in grid and get field at each point
-try:
-    for i, x in enumerate(x_grid):
-        for j, y in enumerate(y_grid):
-            field_at_point = dip_1.get_mag_field(target=[x, y, 1e-6])
-            field_x[i][j] = field_at_point[0]
-            field_y[i][j] = field_at_point[1]
-            field_z[i][j] = field_at_point[2]
-except TypeError as e:
-    print("======ERROR======")
-    print("i, x", i, x)
-    print("j, y", j, y)
-    print(field_at_point)
-    raise
-
-plt.figure
-plt.streamplot(x_grid, y_grid, field_x, field_y, density=1)
-plt.scatter(0, 0, s=100, c="r", alpha=0.5, marker="o")
-#plt.plot([0, 0], [0, dip_1.length])
-plt.xlim(-side_length, side_length)
-plt.ylim(-side_length, side_length)
-plt.show()
+    plt.figure
+    plt.streamplot(x_grid, y_grid, field_x, field_y, density=1)
+    plt.scatter(0, 0, s=100, c="r", alpha=0.5, marker="o")
+    #plt.plot([0, 0], [0, dip_1.length])
+    plt.xlim(-side_length, side_length)
+    plt.ylim(-side_length, side_length)
+    plt.show()
