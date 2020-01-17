@@ -52,7 +52,7 @@ class Dipole(object):
                 - (self.moment / (magnitude**3))
                 )
 
-    def set_relative_loc(self, other):
+    def get_relative_loc(self, other):
         return other.location - self.location
 
 
