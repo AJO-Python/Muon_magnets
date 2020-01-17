@@ -20,7 +20,7 @@ N = 1000
 field = 1e-3
 particles = [Muon() for _ in range(N)]
 for p in particles:
-    p.apply_field(field_dir=[1,1,0])
+    p.apply_field(field_dir=[1,1,0], random_phase=True)
     p.get_kubo_toyabe(0.5)
 lifetimes = list(map(lambda p: p.lifetime, particles))
 rads = list(map(lambda p: p.total_rads % 2*np.pi, particles))

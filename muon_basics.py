@@ -17,13 +17,13 @@ from Modules.positron import Positron
 
 #%%
 # =============================================================================
-# Main
+# Create Muon array
 # =============================================================================
+muon_array = [Muon() for _ in range(1000)]
+lifetimes = [muon.lifetime for muon in muon_array]
+
 plt.figure()
-x = np.zeros(int(1e5))
-for i in range(len(x)):
-    x[i] = Muon().lifetime
-plt.hist(x, range=[0, 20e-6],
+plt.hist(lifetimes, range=[0, 20e-6],
          bins=1000,
          histtype="step",
          cumulative=True)
@@ -35,6 +35,7 @@ plt.annotate(s="Actual Halflife",
              arrowprops={"width":0, "headwidth":0})
 plt.xlabel("Time of decay ($\mu$s)")
 plt.ylabel("Frequency")
+plt.ylim(200)
 plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
 plt.grid()
 plt.show()

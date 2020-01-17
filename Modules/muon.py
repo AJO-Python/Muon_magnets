@@ -41,9 +41,9 @@ class Muon:
 
     def get_lifetime(self, U):
         """
-        Returns decay time in s
         Inverse of the decay equation
-        Takes a number U={0, 1} and returns decay time
+        Takes a number U={0, 1}
+        Returns decay time in seconds
         """
         if U >= 1:
             raise ValueError("U must be in range {0, 1}")
@@ -103,6 +103,6 @@ class Muon:
         self.spin_field_angle = func.get_angle(self.spin_dir, field_dir)
 
     def get_kubo_toyabe(self, width):
-        t = self.lifetime
-        self.kt = (1/3) + ( (2/3) * (1-((width**2) * (t**2))) *
-                   np.exp(-0.5*(width**2)*(t**2)) )
+        """Sets kubo-toyabe from equation"""
+        self.kt = (1/3) + ( (2/3) * (1-((width**2) * (self.lifetime**2))) *
+                   np.exp(-0.5*(width**2)*(self.lifetime**2)) )
