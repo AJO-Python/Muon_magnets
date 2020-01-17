@@ -10,14 +10,14 @@ import Modules.functions as func
 
 
 
-def test_get_mag():
-    print("Testing func.get_mag...")
+def test_set_mag():
+    print("Testing func.set_mag...")
     # Check basic functionality
-    assert func.get_mag([1, 0, 0]) == 1
+    assert func.set_mag([1, 0, 0]) == 1
     # Check negatives handled
-    assert func.get_mag([-1, 0, 0]) == 1
+    assert func.set_mag([-1, 0, 0]) == 1
     # Check 3d space
-    assert func.get_mag([1, 1, 1]) == np.sqrt(3)
+    assert func.set_mag([1, 1, 1]) == np.sqrt(3)
 
 
 def test_mag_force():

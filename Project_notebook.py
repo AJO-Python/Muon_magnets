@@ -35,7 +35,7 @@ def format_subplot(ax, xlab, ylab, title, grid=True, legend=True, show=True):
         plt.show()
 
 
-def get_list_of_values(object_list, attribute):
+def set_list_of_values(object_list, attribute):
     """
     attribute.type() = str
     Returns a list of the values for a given attribute of objects in list
@@ -61,7 +61,7 @@ def expon(x, A, k):
     return A*np.exp(x*k)
 
 
-def get_spin_relaxation(field, time, gyro):
+def set_spin_relaxation(field, time, gyro):
     """
     Returns zero field spin relaxation
     """
@@ -78,7 +78,7 @@ def gaussian_field(width, field):
     return term1 * term2
 
 
-def get_kubo_toyabe_static(width, time):
+def set_kubo_toyabe_static(width, time):
     """
     Returns static guassian Kubo-Toyabe function
     """
@@ -89,7 +89,7 @@ def get_kubo_toyabe_static(width, time):
             )
 
 
-def get_field_width(field, axis=None):
+def set_field_width(field, axis=None):
     """
     If field is given as a vector, axis must be supplied ["x", "y", "z"]
     Returns gaussian width parameter
@@ -160,10 +160,10 @@ for p in particles:
 particles.sort(key=lambda x: x.lifetime)
 
 # Storing values in arrays
-times = get_list_of_values(particles, "lifetime")
-asym = get_list_of_values(particles, "asym")
-polar = get_list_of_values(particles, "polarisation")
-rads = get_list_of_values(particles, "total_rads")
+times = set_list_of_values(particles, "lifetime")
+asym = set_list_of_values(particles, "asym")
+polar = set_list_of_values(particles, "polarisation")
+rads = set_list_of_values(particles, "total_rads")
 
 fields = np.linspace(1e-3, 1e-2, 5)
 times =  np.linspace(0, 5e-6, N)
@@ -174,12 +174,12 @@ long_polarisation = np.zeros([len(fields), N])
 minimum = np.zeros_like(fields)
 
 for i, field in enumerate(fields):
-    width = get_field_width(field)
+    width = set_field_width(field)
     minimum[i] = np.sqrt(3)/width
     sigma = Muon().gyro_ratio * width
     omega = Muon().gyro_ratio * field
     for j, t in enumerate(times):
-        polarisation[i][j] = get_kubo_toyabe_static(width, t)
+        polarisation[i][j] = set_kubo_toyabe_static(width, t)
         long_polarisation[i][j] = ext_longitudinal_field(1e-3, sigma, omega, t)
         
     polar_av = np.add(polar_av, polarisation[i]/len(fields))

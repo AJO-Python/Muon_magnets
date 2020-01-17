@@ -39,20 +39,20 @@ class Dipole(object):
                 Strength: {:.3e} T\n\
                 Moment: {}".format(self.location, self.orientation_d, self.strength, self.moment))
 
-    def get_mag_field(self, target):
+    def set_mag_field(self, target):
         """Gets magnetic field at target location (x, y, z)"""
         # Check that coordinates are same dimension
         if not len(target)==len(self.location):
             raise ValueError("Target location and dipole location must be given in the same dimensions")
         mag_perm = 10**-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
-        magnitude = get_mag(relative_loc)
+        magnitude = set_mag(relative_loc)
         return mag_perm * (
                 (3*relative_loc*(np.dot(self.moment, relative_loc)) / (magnitude**5))
                 - (self.moment / (magnitude**3))
                 )
 
-    def get_relative_loc(self, other):
+    def set_relative_loc(self, other):
         return other.location - self.location
 
 
@@ -73,18 +73,18 @@ class Grid(object):
         self.points = np.zeros([x_points, y_points])
 
 
-def get_unit(vector):
+def set_unit(vector):
     norm = np.linalg.norm(vector)
     if norm == 0: 
         return vector
     return vector / norm
 
 
-def get_mag(vector):
+def set_mag(vector):
     return np.sqrt(vector.dot(vector))
 
 
-def get_dir_2d(vector):
+def set_dir_2d(vector):
     return np.arctan(vector[1]/vector[0])
 
 if __name__=="__main__":
@@ -108,7 +108,7 @@ if __name__=="__main__":
     try:
         for i, x in enumerate(x_grid):
             for j, y in enumerate(y_grid):
-                field_at_point = dip_1.get_mag_field(target=[x, y, 1e-6])
+                field_at_point = dip_1.set_mag_field(target=[x, y, 1e-6])
                 field_x[i][j] = field_at_point[0]
                 field_y[i][j] = field_at_point[1]
                 field_z[i][j] = field_at_point[2]

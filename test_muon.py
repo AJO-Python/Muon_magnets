@@ -30,47 +30,47 @@ def test_apply_field():
 def test_inv_decay():
     muon = Muon()
     for U in [0, 0.1, 0.5, 0.9]:
-        muon.get_lifetime(U)
+        muon.set_lifetime(U)
         assert muon.lifetime > 0
         assert type(muon.lifetime) == np.float64
     with pytest.raises(ValueError):
-        assert muon.get_lifetime(1)
-        assert muon.get_lifetime(2)
+        assert muon.set_lifetime(1)
+        assert muon.set_lifetime(2)
 
-def test_get_random_phase():
+def test_randomise_phase():
     muon = Muon()
-    muon.get_random_phase()
+    muon.randomise_phase()
     assert hasattr(muon, "phase")
     assert type(muon.phase) == float
 
-def test_get_larmor():
+def test_set_larmor():
     muon = Muon()
-    muon.get_larmor(1)
+    muon.set_larmor(1)
     assert muon.larmor == muon.gyro_ratio
     for mag in range(-1, 2, 1):
         muon = Muon()
-        muon.get_larmor(mag)
+        muon.set_larmor(mag)
         assert hasattr(muon, "larmor")
         assert muon.larmor >= 0
     
-def test_get_spin_polarisation():
+def test_set_spin_polarisation():
     muon = Muon()
     muon.apply_field()
-    muon.get_spin_polarisation()
+    muon.set_spin_polarisation()
     polar_val = muon.polarisation.item()
     assert hasattr(muon, "polarisation")
     assert (polar_val <= 1 and polar_val >= -1)
 
-def test_get_decay_orientation():
+def test_set_decay_orientation():
     muon = Muon()
-    muon.get_larmor(1)
-    muon.get_decay_orientation()
+    muon.set_larmor(1)
+    muon.set_decay_orientation()
     assert hasattr(muon, "total_rads")
     assert muon.total_rads == muon.gyro_ratio * muon.lifetime + muon.phase
 
-def test_get_asym():
+def test_set_asym():
     muon = Muon()
     muon.apply_field()
-    muon.get_asym(1)
+    muon.set_asym(1)
     assert hasattr(muon, "asym")
     assert (muon.asym >= -1 and muon.asym <= 1)

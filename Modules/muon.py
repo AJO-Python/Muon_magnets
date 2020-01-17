@@ -19,7 +19,7 @@ class Muon:
         """
         Initialises each muon object with a lifetime
         """
-        self.get_lifetime(np.random.rand(1))
+        self.set_lifetime(np.random.rand(1))
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """
@@ -30,16 +30,16 @@ class Muon:
         """
         try:
             if random_phase:
-                self.get_random_phase()
-            self.get_spin_field_angle(field_dir)
-            self.get_larmor(field_strength)
-            self.get_decay_orientation()
-            self.get_spin_polarisation()
+                self.randomise_phase()
+            self.set_spin_field_angle(field_dir)
+            self.set_larmor(field_strength)
+            self.set_decay_orientation()
+            self.set_spin_polarisation()
         except:
             print("Unexpected error in apply_field()")
             raise
 
-    def get_lifetime(self, U):
+    def set_lifetime(self, U):
         """
         Inverse of the decay equation
         Takes a number U={0, 1}
@@ -51,15 +51,15 @@ class Muon:
             U = 1e-9
         self.lifetime = -(np.log(U)) / Muon.decay_const
 
-    def get_random_phase(self):
+    def randomise_phase(self):
         """Sets phase to random radian"""
         self.phase = np.random.uniform(0, 2*np.pi)
 
-    def get_larmor(self, field_mag):
+    def set_larmor(self, field_mag):
         """Sets larmor to radians per second"""
         self.larmor = abs(field_mag) * self.gyro_ratio
 
-    def get_spin_polarisation(self):
+    def set_spin_polarisation(self):
         """
         Sets polarisation as function of field strength
         and angle from muon spin direction
@@ -70,20 +70,20 @@ class Muon:
             t = self.lifetime
             p = self.phase
         except AttributeError as e:
-            print(f"{e}: must be defined before calling get_spin_polarisation")
+            print(f"{e}: must be defined before calling set_spin_polarisation")
             return
         self.polarisation = (np.cos(theta)**2 +
                              (np.sin(theta)**2) * np.cos(w*t+p))
 
-    def get_decay_orientation(self):
+    def set_decay_orientation(self):
         """Sets orientation at decay as total radians"""
         try:
             self.total_rads = self.larmor * self.lifetime + self.phase
         except AttributeError as e:
-            print(f"{e}: must be defined before calling get_spin_polarisation")
-            return
+            print(f"{e}: must be defined before calling set_spin_polarisation")
+            raise
 
-    def get_asym(self, a0):
+    def set_asym(self, a0):
         """
         Sets asymmetry
         """
@@ -95,14 +95,14 @@ class Muon:
             asym = 1 + a0 * np.cos(self.spin_field_angle * self.lifetime)
             self.asym = asym
         except AttributeError as e:
-            print(f"{e}: must be defined before calling get_asym")
+            print(f"{e}: must be defined before calling set_asym")
             return
 
-    def get_spin_field_angle(self, field_dir):
+    def set_spin_field_angle(self, field_dir):
         """Sets spin_field_angle in radians"""
-        self.spin_field_angle = func.get_angle(self.spin_dir, field_dir)
+        self.spin_field_angle = func.set_angle(self.spin_dir, field_dir)
 
-    def get_kubo_toyabe(self, width):
+    def set_kubo_toyabe(self, width):
         """Sets kubo-toyabe from equation"""
         self.kt = (1/3) + ( (2/3) * (1-((width**2) * (self.lifetime**2))) *
                    np.exp(-0.5*(width**2)*(self.lifetime**2)) )
