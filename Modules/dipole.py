@@ -20,16 +20,21 @@ class Dipole(object):
     location = (pos_x, pos_y)
     orientation and length = pole_separation
     """
+    
     count = 0
+    
     def __init__(self, orientation, location, strength):
         """
-        Init object: pole_separation and location should be 2d arrays
+        orientation: degrees (float)
+        strength: tesla (float)
+        location: list
         """
         self.location = np.array(location)
         self.orientation_d = orientation
         self.orientation_r = np.deg2rad(orientation)
         self.strength = strength
-        self.moment = np.array([strength * np.cos(self.orientation_r), strength * np.sin(self.orientation_r), 0])
+        self.moment = np.array([strength * np.cos(self.orientation_r),
+                                strength * np.sin(self.orientation_r), 0])
         Dipole.count += 1
 
     def __repr__(self):
@@ -37,13 +42,14 @@ class Dipole(object):
         return ("Dipole object:  Location: {}\n\
                 Orientation: {:.2f} degrees\n\
                 Strength: {:.3e} T\n\
-                Moment: {}".format(self.location, self.orientation_d, self.strength, self.moment))
+                Moment: {}".format(self.location, self.orientation_d,
+                                    self.strength, self.moment))
 
     def get_mag_field(self, target):
         """Gets magnetic field at target location (x, y, z)"""
         # Check that coordinates are same dimension
         if not len(target)==len(self.location):
-            raise ValueError("Target location and dipole location must be given in the same dimensions")
+            raise ValueError("Dimensions of target and self.location to not match")
         mag_perm = 10**-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = get_mag(relative_loc)
@@ -117,6 +123,7 @@ if __name__=="__main__":
         print("i, x", i, x)
         print("j, y", j, y)
         print(field_at_point)
+        print(f"Error: {e}")
         raise
 
     plt.figure

@@ -86,6 +86,7 @@ class Muon:
     def set_asym(self, a0):
         """
         Sets asymmetry
+        a0 is bulk asymmetry of muon ensemble
         """
         if a0 < -1 or a0 > 1:  # Checking a0 is in correct range
             print("a0 out of range {-1, 1}")
