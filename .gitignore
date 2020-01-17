@@ -1,15 +1,15 @@
-# Ignore jupyter outputs
+# Ignore console outputs
 nohup.out
 
 # Ignore compiles cython code
-.pyc
+*.pyc
 
 # Ignore spyder project info
 .spyproject
 
 # Ignore checkpoints in jupyter
-.ipynb_checkpoints
+*.ipynb_checkpoints
 
 # Ignore caches
-.pytest_cache
-__pycache__
+*.pytest_cache
+*__pycache__
