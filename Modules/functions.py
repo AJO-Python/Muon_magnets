@@ -31,19 +31,19 @@ def detect_asym(Nf, Nb):
             return 1
 
 
-def set_mag(vector):
+def get_mag(vector):
     """
     Returns magnitude of 3-d vector
     """
     return np.sqrt((vector[0]**2 + vector[1]**2 + vector[2]**2))
 
 
-def set_angle(vec1, vec2):
+def get_angle(vec1, vec2):
     """
     Gets angle between vectors of shape (N,1) as theta {-pi2, pi/2}
     """
     dot = sum(x*y for x,y in zip(vec1, vec2))
-    mag1, mag2 = set_mag(vec1), set_mag(vec2)
+    mag1, mag2 = get_mag(vec1), get_mag(vec2)
     return np.arccos(dot / (mag1*mag2))
 
 

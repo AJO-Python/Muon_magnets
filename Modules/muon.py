@@ -92,15 +92,14 @@ class Muon:
             return 0
         # Checking object has spin_field attribute
         try:
-            asym = 1 + a0 * np.cos(self.spin_field_angle * self.lifetime)
-            self.asym = asym
+            self.asym = 1 + a0 * np.cos(self.spin_field_angle * self.lifetime)
         except AttributeError as e:
             print(f"{e}: must be defined before calling set_asym")
-            return
+            raise
 
     def set_spin_field_angle(self, field_dir):
-        """Sets spin_field_angle in radians"""
-        self.spin_field_angle = func.set_angle(self.spin_dir, field_dir)
+        """Sets angle between external field and spin direction in radians"""
+        self.spin_field_angle = func.get_angle(self.spin_dir, field_dir)
 
     def set_kubo_toyabe(self, width):
         """Sets kubo-toyabe from equation"""

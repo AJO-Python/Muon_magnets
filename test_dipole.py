@@ -33,5 +33,5 @@ def test_dipole():
 
 def test_mag_field():
     dipole = Dipole(orientation=0, location=[0,0,0], strength=1)
-    field = dipole.set_mag_field([2,0,0])
+    field = dipole.get_mag_field([2,0,0])
     assert field == 2
