@@ -87,3 +87,17 @@ def format_plot(fig, max_time=20e-6):
     fig.grid()
     fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
     fig.show()
+
+def chunk_muons(list_to_chunk, freq_per_chunk):
+    """
+    Creates list of specific muons decaying for each time step
+    freq_per_chunk comes from a histogram of muon decay times
+    list_to_chunk -> sorted list of objects to chunk
+    """
+    chunks = np.zeros_like(freq_per_chunk, dtype="object")
+    chunk_start = 0
+    for i, freq in enumerate(freq_per_chunk):
+        freq = int(freq)
+        chunks[i] = list_to_chunk[chunk_start:chunk_start+freq]
+        chunk_start += freq
+    return chunks
