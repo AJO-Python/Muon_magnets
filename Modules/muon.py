@@ -20,6 +20,12 @@ class Muon:
         Initialises each muon object with a lifetime
         """
         self.set_lifetime(np.random.rand(1))
+    
+    def __str__(self):
+        list_of_att = []
+        for att in vars(self):
+            list_of_att.append(att)
+        return "\n".join(list_of_att)
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """
@@ -78,7 +84,7 @@ class Muon:
     def set_decay_orientation(self):
         """Sets orientation at decay as total radians"""
         try:
-            self.total_rads = self.larmor * self.lifetime + self.phase
+            self.total_rads = (self.larmor * self.lifetime + self.phase) % (2*np.pi)
         except AttributeError as e:
             print(f"{e}: must be defined before calling set_spin_polarisation")
             raise
