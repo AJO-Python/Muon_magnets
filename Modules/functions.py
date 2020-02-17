@@ -3,39 +3,22 @@ import numpy as np
 gyro_ratio = 2*np.pi*135.5e6  # Radians per second per Tesla (rad s^-1 T^-1)
 halflife = 2.2969811e-6  # Seconds
 decay_const = np.log(2)/halflife  # Seconds
-
-def larmor_freq(mag_field):
-    """
-    Returns Larmor frequency as rad s^-1
-    """
-    return abs(mag_field * gyro_ratio)
-
-
-def detect_asym(Nf, Nb):
-    """
-    Returns the asymmetry of the measurement
-    """
-    # Catching and reporting negative detection
-    if Nf < 0 or Nb < 0:
-        print("Negative dectection is not possible. Check func.asym()")
-        print("Converting to abs(value) now...")
-        Nf = abs(Nf)
-        Nb = abs(Nb)
-    
-    try:
-        return (Nf - Nb) / (Nb + Nf)
-    except ZeroDivisionError:
-        if Nf == 0 and Nb == 0:
-            return 0
-        else:
-            return 1
-
-
+"""
+VECTOR FUNCTIONS
+"""
 def get_mag(vector):
     """
     Returns magnitude of 3-d vector
     """
-    return np.sqrt((vector[0]**2 + vector[1]**2 + vector[2]**2))
+    return np.sqrt(vector.dot(vector))
+
+
+def get_unit_vector(vector):
+    norm = np.linalg.norm(vector)
+    if not norm:
+        return vector
+    else:
+        return vector/norm
 
 
 def get_angle(vec1, vec2):
@@ -53,6 +36,35 @@ def mag_force(q, v, B):
     F = q ( B X v)
     """
     return q*(np.cross(v, B))
+
+"""
+PARTICLE FUNCTIONS
+"""
+def larmor_freq(mag_field):
+    """
+    Returns Larmor frequency as rad s^-1
+    """
+    return abs(mag_field * gyro_ratio)
+
+
+def detect_asym(Nf, Nb):
+    """
+    Returns the asymmetry of the measurement
+    """
+    # Catching and reporting negative detection
+    if Nf < 0 or Nb < 0:
+        print("Negative dectection is not possible. Check func.asym()")
+        print("Converting to abs(value) now...")
+        Nf = abs(Nf)
+        Nb = abs(Nb)
+
+    try:
+        return (Nf - Nb) / (Nb + Nf)
+    except ZeroDivisionError:
+        if Nf == 0 and Nb == 0:
+            return 0
+        else:
+            return 1
 
 
 def decay(time):
