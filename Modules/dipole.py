@@ -99,6 +99,11 @@ class Grid(object):
         y = self.convert_y(y)
         return self.points[y][x]
 
+    def get_axis_values(self, axis):
+        if axis.lower() == "all":
+            xs, ys, zs = [], [], []
+            for field in self.get_point(*self.all_coords()):
+                print(field)
 
 def set_dir_2d(vector):
     return np.arctan(vector[1]/vector[0])
@@ -115,6 +120,7 @@ def set_field_values(x_array, y_array, dipole_grid, resolution=10):
                 target_dipole = dipole_grid.get_point(*coord)
                 field_to_add = target_dipole.get_mag_field(target=[x, y, 100e-6])
                 field.add_to_point(i, j, field_to_add)
+
     return field
 
 
@@ -133,31 +139,34 @@ def create_dipole_grid(x_array, y_array, strength=1e-3, dipole_spacing=40, buffe
         for j, y in enumerate(dipole_y_pos):
             if random_angle:
                 angle = np.random.randint(0, 361)
-            print(i, j)
+            #print(i, j)
             dipole_grid.change_point((i, j), Dipole(orientation=angle,location=[x, y, 0],strength=strength))
     mid = time.time()
     print("Made {} dipoles in {:.3}s".format(Dipole.count, mid-start))
+    Dipole.count = 0
     return dipole_grid
 
 
 if __name__ == "__main__":
-    Nx, Ny = 300, 300
+    Nx, Ny = 10, 10
     side_length = 2e-3
     x_array = np.linspace(-side_length, side_length, Nx)
     y_array = np.linspace(-side_length, side_length, Ny)
 
     dipoles_aligned = create_dipole_grid(x_array, y_array,
-                                         dipole_spacing=10,
+                                         dipole_spacing=5,
                                          random_angle=False,
                                          strength=1e-2,
-                                         buffer=0)
+                                         buffer=1)
     dipoles_random = create_dipole_grid(x_array, y_array,
-                                        dipole_spacing=10,
+                                        dipole_spacing=5,
                                         random_angle=True,
                                         strength=1e-2,
-                                        buffer=0)
+                                        buffer=1)
+    field = set_field_values(x_array, y_array, dipoles_aligned, resolution=2)
+    #field = [dipoles_aligned.get_point(*coord) for coord in dipoles_aligned.all_coords()]
+    print(field.get_axzis_values("all"))
 
-    print(dipoles_random)
 """
     plt.figure
     plt.streamplot(x_array, y_array, field_x, field_y, density=1)
