@@ -1,18 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import time
-from Modules.muon import Muon
-from Modules.positron import Positron
+import numpy as np
 import Modules.functions as func
-
-from mpl_toolkits.mplot3d import Axes3D
-from scipy.optimize import curve_fit
-
-# Setting graph defaults to avoid repetition on each plot
-mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
-mpl.rcParams["axes.grid"] = True  # Turns grid on
-mpl.rcParams["legend.loc"] = "best"  # Turns legend on and autoplaces i
 
 class Dipole(object):
     """
@@ -20,14 +8,12 @@ class Dipole(object):
     location = (pos_x, pos_y)
     orientation and length = pole_separation
     """
-
     count = 0
-    
     def __init__(self, orientation, location, strength):
         """
         orientation: degrees (float)
-        strength: tesla (float)
-        location: list
+        strength: Tesla (float)
+        location: position vector [x, y, z]
         """
         self.location = np.array(location)
         self.orientation_d = orientation
