@@ -29,24 +29,9 @@ def get_angle(vec1, vec2):
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
     return np.arccos(dot / (mag1*mag2))
 
-
-def mag_force(q, v, B):
-    """
-    Returns magnetic force
-    F = q ( B X v)
-    """
-    return q*(np.cross(v, B))
-
 """
 PARTICLE FUNCTIONS
 """
-def larmor_freq(mag_field):
-    """
-    Returns Larmor frequency as rad s^-1
-    """
-    return abs(mag_field * gyro_ratio)
-
-
 def detect_asym(Nf, Nb):
     """
     Returns the asymmetry of the measurement
@@ -65,33 +50,6 @@ def detect_asym(Nf, Nb):
             return 0
         else:
             return 1
-
-
-def decay(time):
-    decay_prob = (decay_const * np.exp((-decay_const * time)))
-    return decay_prob
-
-
-def mag_precession(mag_x, w, t):
-    return [mag_x*np.cos(w*t), mag_x*np.sin(w*t)]
-
-
-def angular_precession(t, w, theta):
-    return np.cos(theta)**2 + (np.sin(theta)**2)*np.cos(w*t)
-
-
-def polarisation(time):
-    """
-    Lorentzian Kubo-Toyabe
-    """
-    lam_t = decay_const * time
-    result = (1/3) + ((2/3)*(1-lam_t)*np.exp(-lam_t))
-    return result
-
-
-def count_asym(a0, omega, t):
-    return a0 * np.cos(omega*t)
-
 
 def format_plot(fig, max_time=20e-6):
     fig.legend(loc="best")
