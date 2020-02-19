@@ -10,7 +10,8 @@ def get_mag(vector):
     """
     Returns magnitude of 3-d vector
     """
-    return np.sqrt(vector.dot(vector))
+    vector = np.array(vector)
+    return np.sqrt(np.dot(vector, vector))
 
 
 def get_unit_vector(vector):

@@ -151,7 +151,7 @@ if __name__ == "__main__":
                                         buffer=1)
     field = set_field_values(x_array, y_array, dipoles_aligned, resolution=2)
     #field = [dipoles_aligned.get_point(*coord) for coord in dipoles_aligned.all_coords()]
-    print(field.get_axzis_values("all"))
+    print(field.get_axis_values("all"))
 
 """
     plt.figure
