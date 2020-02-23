@@ -1,12 +1,21 @@
 import numpy as np
-import scipy as sci
 import matplotlib.pyplot as plt
-
+import matplotlib as mpl
+from scipy import integrate
 import Modules.muon as mu
 import Modules.dipole as dip
 
+mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
+mpl.rcParams["axes.grid"] = True  # Turns grid on
+mpl.rcParams["legend.loc"] = "best"  # Turns legend on and autoplaces it
 
-def gaussian_KT(time, width):
+
+def static_GKT(time, width):
+    """
+    :param array time: Length of time to calculate
+    :param float width: Guassian width parameter for internal field
+    :return: array
+    """
     sigma = mu.Muon.gyro_ratio * width
     sig_t_sq = (sigma ** 2) * (time ** 2)
     return ((1 / 3) + ((2 / 3)
@@ -15,22 +24,83 @@ def gaussian_KT(time, width):
             )
 
 
-widths = np.logspace(-4, -3, 10, dtype=float)  # Tesla
-time = np.linspace(0, 50e-6, 500)
+def transverse_GKT(time, width, ext_field_in_axis):
+    """
+    :param array time: Length of time to calculate
+    :param float width: Gaussian width parameter for internal field
+    :param float ext_field_in_axis: External applied field
+    :return: array
+    """
+    omega = mu.Muon.gyro_ratio * ext_field_in_axis[2]
+    sigma = mu.Muon.gyro_ratio * width
+    sigma_t = (sigma ** 2) * (time ** 2)
+
+    # Split equation into three parts to ensure correct translation into code
+    part_1 = (1 - (
+            ((2 * (sigma ** 2)) / (omega ** 2))
+            * (1 - (np.cos(omega * time) * np.exp(-0.5 * sigma_t)))
+    )
+              )
+
+    part_2 = ((2 * (sigma ** 4)) / (omega ** 3))
+
+    part_3 = np.zeros_like(time)
+    for i, t in enumerate(time):
+        [part_3[i], _] = integrate.quad(transverse_integral, a=0, b=t, args=(omega, sigma))
+    return part_1 + (part_2 * part_3)
+
+
+def transverse_integral(time, omega, sigma):
+    """
+    :param array time: time array
+    :param float omega: larmour precession frequency
+    :param float sigma: field width parameter
+    :return: float
+    """
+    sig_time = (sigma ** 2) * (time ** 2)
+    return np.sin(omega * time) * np.exp(-0.5 * sig_time)
+
+
+def static_LKT(time, width):
+    """
+    :param array time: Length of time to calculate
+    :param float width: Lorentzian width parameter for internal field
+    :return: array
+    """
+    a = mu.Muon.gyro_ratio * width
+    at = time * a
+    return ((1 / 3) - ((2 / 3)
+                       * (1 - at)
+                       * np.exp((-at)))
+            )
+
+
+def transverse_LKT(time, width, ext_field_in_axis):
+    """
+    :param array time: Times to calculate over
+    :param float width: Lorentzian width parameter for internal field
+    :param float ext_field_in_axis: External applied field
+    :return: array
+    """
+    omega = mu.Muon.gyro_ratio * ext_field_in_axis[2]
+    sigma = mu.Muon.gyro_ratio * width
+    sigma_t = (sigma ** 2) * (time ** 2)
+
+
+widths = np.logspace(-1, 1, 5, dtype=float)  # Tesla
+time = np.linspace(0, 20e-6, 100)
 output = np.zeros([len(widths), len(time)])
 
 for i, width in enumerate(widths):
-    output[i] = gaussian_KT(time, width)
+    output[i] = static_LKT(time, width)
 
 plt.figure()
 for width, data in zip(widths, output):
     plt.plot(time, data, label=f"{width:.1e}")
-plt.xlabel("Time ($\mu$s)")
+plt.xlabel("Time (s)")
 plt.ylabel("Sum of muon precessions")
-plt.title("Static Guassian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
-plt.grid()
-plt.savefig("Muon_magnets/Images/static_KT.png", bbox_inches="tight")
+plt.title("Static Lorentzian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
+plt.savefig("Images/static_LKT.png", bbox_inches="tight")
 plt.legend(loc="best", fontsize="small")
 
 plt.show()
-
