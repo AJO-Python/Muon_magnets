@@ -30,7 +30,7 @@ rads = map(lambda p: (p.total_rads % 2*np.pi)/2*np.pi, particles)
 kt = map(lambda p: p.kt, particles)
 
 information = np.array([*lifetimes, *rads, *kt])
-information.view("i8,i8,i8").sort(order=["f0"], axis=0)
+information.view("i8,i8,i8").sort(order=["f1"], axis=0)
 
 plt.figure()
 plt.plot(informatio[0], information[1])
