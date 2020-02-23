@@ -12,7 +12,7 @@ mpl.rcParams["legend.loc"] = "best"  # Turns legend on and autoplaces it
 
 def static_GKT(time, width):
     """
-    :param array time: Length of time to calculate
+    :param object time: Length of time to calculate
     :param float width: Guassian width parameter for internal field
     :return: array
     """
@@ -26,12 +26,12 @@ def static_GKT(time, width):
 
 def transverse_GKT(time, width, ext_field_in_axis):
     """
-    :param array time: Length of time to calculate
+    :param object time: Length of time to calculate
     :param float width: Gaussian width parameter for internal field
     :param float ext_field_in_axis: External applied field
     :return: array
     """
-    omega = mu.Muon.gyro_ratio * ext_field_in_axis[2]
+    omega = mu.Muon.gyro_ratio * ext_field_in_axis
     sigma = mu.Muon.gyro_ratio * width
     sigma_t = (sigma ** 2) * (time ** 2)
 
@@ -52,7 +52,7 @@ def transverse_GKT(time, width, ext_field_in_axis):
 
 def transverse_integral(time, omega, sigma):
     """
-    :param array time: time array
+    :param float time: Time to integrate at
     :param float omega: larmour precession frequency
     :param float sigma: field width parameter
     :return: float
@@ -63,7 +63,7 @@ def transverse_integral(time, omega, sigma):
 
 def static_LKT(time, width):
     """
-    :param array time: Length of time to calculate
+    :param object time: Length of time to calculate
     :param float width: Lorentzian width parameter for internal field
     :return: array
     """
@@ -77,7 +77,7 @@ def static_LKT(time, width):
 
 def transverse_LKT(time, width, ext_field_in_axis):
     """
-    :param array time: Times to calculate over
+    :param object time: Times to calculate over
     :param float width: Lorentzian width parameter for internal field
     :param float ext_field_in_axis: External applied field
     :return: array
@@ -87,20 +87,20 @@ def transverse_LKT(time, width, ext_field_in_axis):
     sigma_t = (sigma ** 2) * (time ** 2)
 
 
-widths = np.logspace(-1, 1, 5, dtype=float)  # Tesla
+widths = np.logspace(-4, -3, 5, dtype=float)  # Tesla
 time = np.linspace(0, 20e-6, 100)
 output = np.zeros([len(widths), len(time)])
 
 for i, width in enumerate(widths):
-    output[i] = static_LKT(time, width)
+    output[i] = transverse_GKT(time, width, 1e-3)
 
 plt.figure()
 for width, data in zip(widths, output):
-    plt.plot(time, data, label=f"{width:.1e}")
+    plt.plot(time, data, label=f"Width: {width:.1e}T")
 plt.xlabel("Time (s)")
 plt.ylabel("Sum of muon precessions")
-plt.title("Static Lorentzian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
-plt.savefig("Images/static_LKT.png", bbox_inches="tight")
+plt.title("Transverse (z) Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
+plt.savefig("Images/static_GKT.png", bbox_inches="tight")
 plt.legend(loc="best", fontsize="small")
 
 plt.show()
