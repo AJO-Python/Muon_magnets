@@ -92,7 +92,7 @@ if __name__ == "__main__":
     av_data = np.zeros(len(time))
 
     for i, width in enumerate(widths):
-        output[i] = static_GKT(time, width)  # , 1e-3)
+        output[i] = longitudinal_GKT(time, width, -1e-3)
 
     plt.figure()
     for width, data in zip(widths, output):
@@ -103,8 +103,8 @@ if __name__ == "__main__":
     # PLOTTING
     plt.xlabel("Time (s)")
     plt.ylabel("Sum of muon precessions (z-axis)")
-    plt.title("Zero field Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
+    plt.title("Longitudinal (-z) Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
     plt.legend(loc="best", fontsize="small")
     # plt.plot(time, av_data, "r--", label="Average")
+    plt.savefig("Images/Analytical/long_rev_GKT.png", bbox_inches="tight")
     plt.show()
-    plt.savefig("Images/Analytical/ZF_GKT.png", bbox_inches="tight")
