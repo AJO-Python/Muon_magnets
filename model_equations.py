@@ -7,8 +7,6 @@ import Modules.dipole as dip
 
 mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
 mpl.rcParams["axes.grid"] = True  # Turns grid on
-mpl.rcParams["legend.loc"] = "best"  # Turns legend on and autoplaces it
-
 
 def static_GKT(time, width):
     """
@@ -24,7 +22,7 @@ def static_GKT(time, width):
             )
 
 
-def transverse_GKT(time, width, ext_field_in_axis):
+def longitudinal_GKT(time, width, ext_field_in_axis):
     """
     :param object time: Length of time to calculate
     :param float width: Gaussian width parameter for internal field
@@ -46,11 +44,11 @@ def transverse_GKT(time, width, ext_field_in_axis):
 
     part_3 = np.zeros_like(time)
     for i, t in enumerate(time):
-        [part_3[i], _] = integrate.quad(transverse_integral, a=0, b=t, args=(omega, sigma))
+        [part_3[i], _] = integrate.quad(longitudinal_integral, a=0, b=t, args=(omega, sigma))
     return part_1 + (part_2 * part_3)
 
 
-def transverse_integral(time, omega, sigma):
+def longitudinal_integral(time, omega, sigma):
     """
     :param float time: Time to integrate at
     :param float omega: larmour precession frequency
@@ -82,25 +80,31 @@ def transverse_LKT(time, width, ext_field_in_axis):
     :param float ext_field_in_axis: External applied field
     :return: array
     """
-    omega = mu.Muon.gyro_ratio * ext_field_in_axis[2]
+    omega = mu.Muon.gyro_ratio * ext_field_in_axis
     sigma = mu.Muon.gyro_ratio * width
     sigma_t = (sigma ** 2) * (time ** 2)
 
 
-widths = np.logspace(-4, -3, 5, dtype=float)  # Tesla
-time = np.linspace(0, 20e-6, 100)
-output = np.zeros([len(widths), len(time)])
+if __name__ == "__main__":
+    widths = np.logspace(-4, -3, 5, dtype=float)  # Tesla
+    time = np.linspace(0, 20e-6, 150)
+    output = np.zeros([len(widths), len(time)])
+    av_data = np.zeros(len(time))
 
-for i, width in enumerate(widths):
-    output[i] = transverse_GKT(time, width, 1e-3)
+    for i, width in enumerate(widths):
+        output[i] = static_GKT(time, width)  # , 1e-3)
 
-plt.figure()
-for width, data in zip(widths, output):
-    plt.plot(time, data, label=f"Width: {width:.1e}T")
-plt.xlabel("Time (s)")
-plt.ylabel("Sum of muon precessions")
-plt.title("Transverse (z) Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
-plt.savefig("Images/static_GKT.png", bbox_inches="tight")
-plt.legend(loc="best", fontsize="small")
+    plt.figure()
+    for width, data in zip(widths, output):
+        plt.plot(time, data, label=f"Width: {width:.1e}T")
+        # av_data = np.add(av_data, data)
+    # av_data = av_data/len(widths)
 
-plt.show()
+    # PLOTTING
+    plt.xlabel("Time (s)")
+    plt.ylabel("Sum of muon precessions (z-axis)")
+    plt.title("Zero field Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
+    plt.legend(loc="best", fontsize="small")
+    # plt.plot(time, av_data, "r--", label="Average")
+    plt.show()
+    plt.savefig("Images/Analytical/ZF_GKT.png", bbox_inches="tight")

@@ -3,11 +3,6 @@ import numpy as np
 import Modules.functions as func
 import Modules.grid as grid
 class Dipole(object):
-    """
-    Creates dipole:
-    location = (pos_x, pos_y)
-    orientation and length = pole_separation
-    """
     count = 0
     def __init__(self, orientation, location, strength):
         """
@@ -34,15 +29,16 @@ class Dipole(object):
     def get_mag_field(self, target):
         """Gets magnetic field at target location (x, y, z)"""
         # Check that coordinates are same dimension
-        if not len(target)==len(self.location):
+        if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
-        mag_perm = 10**-7  # Cancel constant terms to get mag_perm as only constant
+        temp_moment = self.moment[:len(target)]
+        mag_perm = 10e-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
         return mag_perm * (
-                (3*relative_loc*(np.dot(self.moment, relative_loc)) / (magnitude**5))
-                - (self.moment / (magnitude**3))
-                )
+                (3 * relative_loc * (np.dot(temp_moment, relative_loc)) / (magnitude ** 5))
+                - (temp_moment / (magnitude ** 3))
+        )
 
     def get_relative_loc(self, other):
         return other.location - self.location
