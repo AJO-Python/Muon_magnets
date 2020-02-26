@@ -2,20 +2,23 @@ import time
 import numpy as np
 import Modules.functions as func
 import Modules.grid as grid
+
 class Dipole(object):
     count = 0
-    def __init__(self, orientation, location, strength):
+    def __init__(self, orientation=0, location=[0, 0, 0], strength=1e-3):
         """
-        orientation: degrees (float)
-        strength: Tesla (float)
-        location: position vector [x, y, z]
+        :param float orientation: Angle of dipole in degrees (+ve x = 0)
+        :param array location: Location of dipole [x, y, z]
+        :param float strength: Magnetic field strength (Tesle)
         """
         self.location = np.array(location)
         self.orientation_d = orientation
         self.orientation_r = np.deg2rad(orientation)
         self.strength = strength
         self.moment = np.array([strength * np.cos(self.orientation_r),
-                                strength * np.sin(self.orientation_r), 0])
+                                strength * np.sin(self.orientation_r)])
+        if len(location) == 3:
+            self.moment = np.append(self.moment, 0)
         Dipole.count += 1
 
     def __repr__(self):
@@ -27,7 +30,10 @@ class Dipole(object):
                                     self.strength, self.moment))
 
     def get_mag_field(self, target):
-        """Gets magnetic field at target location (x, y, z)"""
+        """
+        :param array target: Target location [x, y, z]
+        :return: array of field values at target location
+        """
         # Check that coordinates are same dimension
         if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
@@ -41,8 +47,11 @@ class Dipole(object):
         )
 
     def get_relative_loc(self, other):
+        """
+        :param object other: Location of "other" dipole location
+        :return vector: Relative vector
+        """
         return other.location - self.location
-
 
 def set_dir_2d(vector):
     return np.arctan(vector[1]/vector[0])
