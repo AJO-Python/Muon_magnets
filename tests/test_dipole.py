@@ -23,7 +23,7 @@ def test_dipole():
     assert type(dipole.location) == np.ndarray
     assert type(dipole.moment) == np.ndarray
 
-    # Check orientatiion and angle conversion corrent
+    # Check orientation and angle conversion correct
     assert dipole.orientation_d == 45
     assert dipole.orientation_r == np.deg2rad(dipole.orientation_d)
     assert len(dipole.moment) == len(dipole.location)

@@ -99,7 +99,7 @@ class Muon:
             return 0
         # Checking object has spin_field attribute
         try:
-            self.asym = 1 + a0 * np.cos(self.spin_field_angle * self.lifetime)
+            self.asym = float(a0 * np.cos(self.spin_field_angle * self.lifetime))
         except AttributeError as e:
             print(f"{e}: must be defined before calling set_asym")
             raise
