@@ -7,16 +7,22 @@ decay_const = np.log(2) / halflife  # Seconds
 VECTOR FUNCTIONS
 """
 
-
 def get_mag(vector):
     """
-    Returns magnitude of 3-d vector
+    :param array vector: Vector to operate on
+    :rtype: float
+    :return: Mangitude of $vector
     """
     vector = np.array(vector)
     return np.sqrt(np.dot(vector, vector))
 
 
 def get_unit_vector(vector):
+    """
+    :param array vector: Vector to operate on
+    :rtype: array
+    :return: unit vector of $vector
+    """
     norm = np.linalg.norm(vector)
     if not norm:
         return vector
@@ -26,7 +32,10 @@ def get_unit_vector(vector):
 
 def get_angle(vec1, vec2):
     """
-    Gets angle between vectors of shape (N,1) as theta {-pi2, pi/2}
+    :param array vec1: First vector
+    :param array vec2: Second vector
+    :rtype: float
+    :return: Angle between $vec1 and $vec2 in radians {-pi/2, pi/2
     """
     dot = sum(x * y for x, y in zip(vec1, vec2))
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
@@ -40,7 +49,10 @@ PARTICLE FUNCTIONS
 
 def detect_asym(Nf, Nb):
     """
-    Returns the asymmetry of the measurement
+    :param int Nf: Number of counts in forward detector
+    :param int Nb: Number of counts in backward detector
+    :rtype: float
+    :return: Asymmetry
     """
     # Catching and reporting negative detection
     if Nf < 0 or Nb < 0:
@@ -68,9 +80,11 @@ def format_plot(fig, max_time=20e-6):
 
 def chunk_muons(list_to_chunk, freq_per_chunk):
     """
+    :param list list_to_chunk: A sorted list of objects to split into chunks
+    :param list freq_per_chunk: A list of counts per bin for $list_to_chunk
+    :rtype: array
+    :return: Array made from $list_to_chunk split into "freq_per_chunk" length chunks
     Creates list of specific muons decaying for each time step
-    freq_per_chunk comes from a histogram of muon decay times
-    list_to_chunk -> sorted list of objects to chunk
     """
     chunks = np.zeros_like(freq_per_chunk, dtype="object")
     chunk_start = 0
@@ -83,33 +97,33 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
 
 def save_array(filename, data):
     """
-    :param str filename: Will save to "Muon_magnets/Results/{filename}.txt"
+    :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
     :param array data: 2d array to save to file
     :return: Saves an array to a binary .npy file
     """
-    file_path = f"./Results/{filename}.txt"
+    file_path = f"./data/{filename}.txt"
     np.savetxt(file_path, data)
     print(f"Saved to {file_path}")
 
 
 def save_object(filename, obj):
     """
-    :param filename: Will save to "Muon_magnets/Results/{filename}.txt"
+    :param filename: Will save to "Muon_magnets/data/{filename}.txt"
     :param obj: Object to save
     """
     import pickle
-    file_path = f"./Results/{filename}.pickle"
+    file_path = f"./data/{filename}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 
 def load_object(filename):
     """
-    :param filename: Will load from "Muon_magnets/Results/{filename}.pickle"
+    :param filename: Will load from "Muon_magnets/data/{filename}.pickle"
     :rtype: object
     :return: Object stored in file
     """
     import pickle
-    file_path = f"./Results/{filename}.pickle"
+    file_path = f"./data/{filename}.pickle"
     with open(file_path, 'rb') as output:  # Overwrites any existing file.
         return pickle.load(output)

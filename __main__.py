@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
-import Modules.functions as func
-import Modules.muon as mu
-import Modules.dipole as dip
-import Modules.grid as grid
+import modules.functions as func
+import modules.muon as mu
+import modules.dipole as dip
+import modules.grid as grid
 import model_equations
 
 
@@ -83,6 +83,6 @@ ax.set_title(r"$\bar{B}$ lines from an array of nano-islands")
 # ax.set_xlim(-1e-6, 10e-6)
 # ax.set_ylim(-1e-6, 10e-6)
 ax.set_aspect('equal')
-plt.savefig(f"Images/Dipoles/real_grid_{runname}.png", bbox_inches="tight")
+plt.savefig(f"images/dipoles/real_grid_{runname}.png", bbox_inches="tight")
 # plt.colorbar()
 plt.show()

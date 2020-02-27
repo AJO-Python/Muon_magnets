@@ -1,7 +1,7 @@
 import time
 import numpy as np
-import Modules.functions as func
-import Modules.grid as grid
+import modules.functions as func
+import modules.grid as grid
 
 class Dipole():
     """
@@ -41,14 +41,16 @@ class Dipole():
         # Check that coordinates are same dimension
         if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
-        temp_moment = self.moment[:len(target)]  # Ensure moment is same dimension
+        temp_moment = self.moment[:len(target)]  # Ensure moment is correct dimension
         mag_perm = 10e-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
-        return mag_perm * (
-                (3 * relative_loc * (np.dot(temp_moment, relative_loc)) / (magnitude ** 5))
-                - (temp_moment / (magnitude ** 3))
-        )
+        return mag_perm
+               * (
+                   (3 * relative_loc * (np.dot(temp_moment, relative_loc))
+                    / (magnitude ** 5))
+                    - (temp_moment / (magnitude ** 3))
+                 )
 
     def get_relative_loc(self, other):
         """

@@ -1,11 +1,11 @@
 import numpy as np
-if __name__ == "__main__":
-    import functions as func
-else:
-    import Modules.functions as func
+import modules.functions as func
 
 
 class Muon:
+    """
+    Makes an object representing a muon decaying at a set location in a magnetic field
+    """
     mass = 1.883531627e-28
     charge = 1
     mass_energy = 105.6583745e6
