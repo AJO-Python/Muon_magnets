@@ -11,15 +11,15 @@ import model_equations
 
 def create_field_grid(runname,
                       x_points=20, y_points=20,
-                      spacing=1e-6, rand=False):
+                      field_spacing=1e-6, dipole_spacing=3e-6,
+                      rand=False):
     dipole_grid = grid.Grid(x_points, y_points)
     # Find limits of dipoles so we know where to plot the field lines
-    dipole_grid.fill_with_dipoles(spacing=3e-6, angle=0,
-                                  random_angle=rand,
-                                  full=True)
+    dipole_grid.fill_with_dipoles(spacing=dipole_spacing, angle=0,
+                                  random_angle=rand)
     x_max, y_max = dipole_grid.real_size
-    real_locs_x = np.arange(0, x_max, spacing)
-    real_locs_y = np.arange(0, y_max, spacing)
+    real_locs_x = np.arange(0, x_max, field_spacing)
+    real_locs_y = np.arange(0, y_max, field_spacing)
 
     # Get field values over field array
     Ex, Ey = dipole_grid.fill_field_values(real_locs_x, real_locs_y)
@@ -36,13 +36,16 @@ def create_field_grid(runname,
 #############################################################
 # RUN PARAMETERS
 x_points = 5
-y_points = 5
+y_points = 2
 field_sample_spacing = 1e-7
+dipole_spacing=3e-6
 random = False
-runname = "5x5_1e7_U"
+runname = "5x2_1e7_U"
 
 create_field_grid(runname, x_points=x_points, y_points=y_points,
-                  spacing=field_sample_spacing, rand=random)
+                  field_spacing=field_sample_spacing,
+                  dipole_spacing=dipole_spacing,
+                  rand=random)
 #############################################################
 
 Ex = np.loadtxt(f"./Results/Ex_uniform_{runname}.txt")
