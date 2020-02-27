@@ -1,5 +1,5 @@
 import numpy as np
-import Modules.dipole as dip
+import modules.dipole as dip
 
 
 class Grid():
