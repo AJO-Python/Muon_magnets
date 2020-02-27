@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from scipy import integrate
-import Modules.muon as mu
-import Modules.dipole as dip
+import modules.muon as mu
+import modules.dipole as dip
 
 mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
 mpl.rcParams["axes.grid"] = True  # Turns grid on

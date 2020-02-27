@@ -90,14 +90,18 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
 """
 DATA SAVE/LOAD FUNCTIONS
 """
-def save_array(filename, data):
+def save_array(filename, **kwargs):
     """
     :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
     :param array data: 2d array to save to file
     :return: Saves an array to a binary .npy file
     """
-    file_path = f"./data/{filename}.txt"
-    np.savetxt(file_path, data)
+    file_path = f"./data/{filename}.npz"
+    #print(kwargs)
+    # TODO: Work out why **kwargs is not saving files properly
+    # Currently stores as "arr_01"
+    # It does not unpack the args so they are not being labelled correctly
+    np.savez(file_path, )
     print(f"Saved to {file_path}")
 
 

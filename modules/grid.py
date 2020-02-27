@@ -40,6 +40,7 @@ class Grid():
         :return: sets self.points to 2-d array of zeros in shape (x_points, y_points)
         """
         self.points = np.zeros([x_points, y_points], dtype=object)
+        print(f"shape of grid: {np.shape(self.points)}")
 
     def set_point(self, coord, value):
         """
@@ -50,7 +51,7 @@ class Grid():
         """
         x, y = coord
         y = self.convert_y(y)
-        self.points[y][x] = value
+        self.points[x][y] = value
 
     def add_to_point(self, coord, new_value):
         """
@@ -76,7 +77,8 @@ class Grid():
         :return: Gets the object stored at grid point (x, y)
         """
         x, y = coord
-        return self.points[self.convert_y(y)][x]
+        y = self.convert_y(y)
+        return self.points[x][y]
 
     def all_coords(self):
         """
@@ -128,7 +130,10 @@ class Grid():
             print(f"Calculating row... {i}/{x_len - 1}")
             for j, y in enumerate(y_locs):
                 for dipole in self.all_values():
+                    if np.array_equal(dipole.location, np.array([x, y])):
+                        print(f"Skipping {x},{y} as it overlaps a magnet")
+                        continue
                     ex, ey = dipole.get_mag_field([x, y])
-                    Ex[j][i] += ex
-                    Ey[j][i] += ey
+                    Ex[i][j] += ex
+                    Ey[i][j] += ey
         return Ex, Ey
