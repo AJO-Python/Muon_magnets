@@ -1,7 +1,12 @@
 import numpy as np
 import Modules.dipole as dip
 
-class Grid(object):
+
+class Grid():
+    """
+    Creates a width x height grid that can store objects at all points.
+    """
+
     def __init__(self, width, height):
         """
         :param int width: Number of columns
@@ -13,7 +18,6 @@ class Grid(object):
         self.add_points(width, height)
         self.size = (self.width, self.height)
 
-    @property
     def __repr__(self):
         ret_str = ""
         comma = False
@@ -90,7 +94,7 @@ class Grid(object):
             yield self.get_point(coord)
 
     def fill_with_dipoles(self, spacing=3e-6, angle=0,
-                          random_angle=False, full=False):
+                          random_angle=False):
         """
         :param float spacing: Centre to centre distance of dipoles
         :param float angle: Orientation of dipole in degrees
@@ -99,7 +103,7 @@ class Grid(object):
         :return: Fills field with dipoles
         """
         self.real_size = [val * spacing for val in self.size]
-        for i, coord in enumerate(self.all_coords()):
+        for coord in self.all_coords():
             pos = spacing
             if random_angle:
                 angle = np.random.uniform(0, 360)

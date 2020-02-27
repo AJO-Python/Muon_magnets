@@ -3,8 +3,12 @@ import numpy as np
 import Modules.functions as func
 import Modules.grid as grid
 
-class Dipole(object):
+class Dipole():
+    """
+    Creates a dipole object to be placed on a Modules.Grid() point
+    """
     count = 0
+
     def __init__(self, orientation=0, location=[0, 0, 0], strength=1e-3):
         """
         :param float orientation: Angle of dipole in degrees (+ve x = 0)
@@ -27,7 +31,7 @@ class Dipole(object):
                 Orientation: {:.2f} degrees\n\
                 Strength: {:.3e} T\n\
                 Moment: {}".format(self.location, self.orientation_d,
-                                    self.strength, self.moment))
+                                   self.strength, self.moment))
 
     def get_mag_field(self, target):
         """
@@ -37,7 +41,7 @@ class Dipole(object):
         # Check that coordinates are same dimension
         if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
-        temp_moment = self.moment[:len(target)]
+        temp_moment = self.moment[:len(target)]  # Ensure moment is same dimension
         mag_perm = 10e-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
@@ -53,8 +57,14 @@ class Dipole(object):
         """
         return other.location - self.location
 
+
 def set_dir_2d(vector):
-    return np.arctan(vector[1]/vector[0])
+    """
+    :param array vector: (x, y)
+    :rtype: float
+    :return: angle of 2d vector
+    """
+    return np.arctan(vector[1] / vector[0])
 
 
 def set_field_values(x_array, y_array, dipole_grid, resolution=10):
@@ -91,37 +101,10 @@ def create_dipole_grid(x_array, y_array, strength=1e-3,
             if random_angle:
                 angle = np.random.randint(0, 361)
             # print(i, j)
-            dipole_grid.set_point((i, j), Dipole(orientation=angle, location=[x, y, 0], strength=strength))
+            dipole_grid.set_point((i, j), Dipole(orientation=angle,
+                                                 location=[x, y, 0],
+                                                 strength=strength))
     mid = time.time()
     print("Made {} dipoles in {:.3}s".format(Dipole.count, mid - start))
     Dipole.count = 0
     return dipole_grid
-
-# if __name__ == "__main__":
-#     Nx, Ny = 10, 10
-#     side_length = 2e-3
-#     x_array = np.linspace(-side_length, side_length, Nx)
-#     y_array = np.linspace(-side_length, side_length, Ny)
-#
-#     dipoles_aligned = create_dipole_grid(x_array, y_array,
-#                                          dipole_spacing=5,
-#                                          random_angle=False,
-#                                          strength=1e-2,
-#                                          buffer=1)
-#     dipoles_random = create_dipole_grid(x_array, y_array,
-#                                         dipole_spacing=5,
-#                                         random_angle=True,
-#                                         strength=1e-2,
-#                                         buffer=1)
-#     field = set_field_values(x_array, y_array, dipoles_aligned, resolution=2)
-#     #field = [dipoles_aligned.get_point(*coord) for coord in dipoles_aligned.all_coords()]
-#     #print(field.get_axis_values("all"))
-"""
-    plt.figure
-    plt.streamplot(x_array, y_array, field_x, field_y, density=1)
-    plt.scatter(0, 0, s=100, c="r", alpha=0.5, marker="o")
-    #plt.plot([0, 0], [0, dip_1.length])
-    plt.xlim(-side_length, side_length)
-    plt.ylim(-side_length, side_length)
-    plt.show()
-"""
