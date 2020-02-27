@@ -1,12 +1,7 @@
 import numpy as np
-
-gyro_ratio = 2 * np.pi * 135.5e6  # Radians per second per Tesla (rad s^-1 T^-1)
-halflife = 2.2969811e-6  # Seconds
-decay_const = np.log(2) / halflife  # Seconds
 """
 VECTOR FUNCTIONS
 """
-
 def get_mag(vector):
     """
     :param array vector: Vector to operate on
@@ -41,11 +36,9 @@ def get_angle(vec1, vec2):
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
     return np.arccos(dot / (mag1 * mag2))
 
-
 """
 PARTICLE FUNCTIONS
 """
-
 
 def detect_asym(Nf, Nb):
     """
@@ -54,7 +47,7 @@ def detect_asym(Nf, Nb):
     :rtype: float
     :return: Asymmetry
     """
-    # Catching and reporting negative detection
+    # Catching and fixing negative detection
     if Nf < 0 or Nb < 0:
         print("Negative dectection is not possible. Check func.asym()")
         print("Converting to abs(value) now...")
@@ -94,7 +87,9 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
         chunk_start += freq
     return chunks
 
-
+"""
+DATA SAVE/LOAD FUNCTIONS
+"""
 def save_array(filename, data):
     """
     :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
