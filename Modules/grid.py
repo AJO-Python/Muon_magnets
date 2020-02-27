@@ -121,7 +121,7 @@ class Grid(object):
         Ex = np.zeros([x_len, y_len])
         Ey = np.zeros([x_len, y_len])
         for i, x in enumerate(x_locs):
-            print(f"Loop: {i}/{x_len}")
+            print(f"Calculating row... {i}/{x_len - 1}")
             for j, y in enumerate(y_locs):
                 for dipole in self.all_values():
                     ex, ey = dipole.get_mag_field([x, y])
