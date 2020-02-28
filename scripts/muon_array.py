@@ -74,6 +74,8 @@ y_vals = np.linspace(*field_region[1], ny)
 
 Ex, Ey = fill_field_values(dipole_array, x_vals, y_vals)
 
+func.save_array("test", ex=Ex, ey=Ey)
+
 
 # PLOTTING
 fig = plt.figure()

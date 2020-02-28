@@ -96,12 +96,12 @@ def save_array(filename, **kwargs):
     :param array data: 2d array to save to file
     :return: Saves an array to a binary .npy file
     """
-    file_path = f"./data/{filename}.npz"
-    #print(kwargs)
-    # TODO: Work out why **kwargs is not saving files properly
-    # Currently stores as "arr_01"
-    # It does not unpack the args so they are not being labelled correctly
-    np.savez(file_path, )
+    names, data = list(), list()
+    file_path = f"../data/{filename}.npz"
+    for key, value in kwargs.items():
+        names.append(key)
+        data.append(value)
+    np.savez(file_path, kwargs)
     print(f"Saved to {file_path}")
 
 
@@ -111,7 +111,7 @@ def save_object(filename, obj):
     :param obj: Object to save
     """
     import pickle
-    file_path = f"./data/{filename}.pickle"
+    file_path = f"../data/{filename}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
@@ -123,6 +123,6 @@ def load_object(filename):
     :return: Object stored in file
     """
     import pickle
-    file_path = f"./data/{filename}.pickle"
+    file_path = f"../data/{filename}.pickle"
     with open(file_path, 'rb') as output:  # Overwrites any existing file.
         return pickle.load(output)
