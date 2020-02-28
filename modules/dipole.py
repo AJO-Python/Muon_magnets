@@ -9,28 +9,32 @@ class Dipole():
     """
     count = 0
 
-    def __init__(self, orientation=0, location=[0, 0, 0], strength=1e-3):
+    def __init__(self, orientation=0, coord=[0, 0, 0], strength=1e-3, **kwargs):
         """
         :param float orientation: Angle of dipole in degrees (+ve x = 0)
         :param array location: Location of dipole [x, y, z]
         :param float strength: Magnetic field strength (Tesle)
+        :param dict kwargs: attributes and their values to set
         """
-        self.location = np.array(location)
+        self.coord = np.array(coord)
         self.orientation_d = orientation
         self.orientation_r = np.deg2rad(orientation)
         self.strength = strength
         self.moment = np.array([strength * np.cos(self.orientation_r),
                                 strength * np.sin(self.orientation_r)])
-        if len(location) == 3:
+        # Set attributes from **kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        if len(coord) == 3:
             self.moment = np.append(self.moment, 0)
         Dipole.count += 1
 
     def __repr__(self):
         """Sets string representation of the instance"""
-        return ("Dipole object:  Location: {}\n\
+        return ("Dipole object:  coord: {}\n\
                 Orientation: {:.2f} degrees\n\
                 Strength: {:.3e} T\n\
-                Moment: {}".format(self.location, self.orientation_d,
+                Moment: {}".format(self.coord, self.orientation_d,
                                    self.strength, self.moment))
 
     def get_mag_field(self, target):
@@ -45,14 +49,12 @@ class Dipole():
         mag_perm = 10e-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
-        return (mag_perm
-               * (
-                 (3 * relative_loc * (np.dot(temp_moment, relative_loc))
-                 / (magnitude ** 5)
-                 )
-                 - (temp_moment / (magnitude ** 3))
-                 )
-                )
+
+        return mag_perm * (
+                   (3 * relative_loc * (np.dot(temp_moment, relative_loc))
+                    / (magnitude ** 5))
+                    - (temp_moment / (magnitude ** 3))
+                    )
 
     def get_relative_loc(self, other):
         """

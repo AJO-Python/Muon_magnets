@@ -15,17 +15,22 @@ class Muon:
     spin_dir = np.array([0, 0, -1])
     phase = 0
 
-    def __init__(self):
+    def __init__(self, coord=False):
         """
         Initialises each muon object with a lifetime
         """
+        if coord:
+            self.coord = coord
         self.set_lifetime(np.random.rand(1))
-    
+
     def __str__(self):
         list_of_att = []
         for att in vars(self):
             list_of_att.append(att)
         return "\n".join(list_of_att)
+
+    def __repr__(self):
+        return f"Muon at {self.coord}"
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """
