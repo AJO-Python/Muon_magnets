@@ -1,4 +1,6 @@
-width=2
-height=2
-spacing=3e-6
-random_orientation = False
+# $variable_name = value
+width = 5
+height = 5
+spacing = 3e-6
+angle = 0
+random_orientation = True

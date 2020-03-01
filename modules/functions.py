@@ -93,12 +93,8 @@ def save_array(filename, **kwargs):
     :param array data: 2d array to save to file
     :return: Saves an array to a binary .npy file
     """
-    names, data = list(), list()
     file_path = f"../data/{filename}.npz"
-    for key, value in kwargs.items():
-        names.append(key)
-        data.append(value)
-    np.savez(file_path, kwargs)
+    np.savez(file_path, **kwargs)
     print(f"Saved to {file_path}")
 
 
