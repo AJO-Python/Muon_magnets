@@ -87,13 +87,22 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
 # =============================================================================
 # DATA SAVE
 # =============================================================================
-def save_array(filename, **kwargs):
+def save_array(run_name, file_name, **kwargs):
     """
-    :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
-    :param array data: 2d array to save to file
-    :return: Saves an array to a binary .npy file
+    :param str filename: Saves to "Muon_magnets/data/{run_name}/{file_name}.npz"
+    :param dict kwargs: arrays to save to file
+    :return: Saves arrays to a binary .npy file
     """
-    file_path = f"../data/{filename}.npz"
+    import os
+    import errno
+    # Check if run folder exists and make it if not
+    try:
+        os.makedirs(f"../data/{run_name}")
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+    file_path = f"../data/{run_name}/{file_name}.npz"
     np.savez(file_path, **kwargs)
     print(f"Saved to {file_path}")
 
@@ -123,7 +132,6 @@ def load_object(file_name):
 
 def load_config(file_name):
     """
-    The config file can have either floats or bools as options
     All variables must be on a newline and seperated from its value by "="
     :param str file_name: Name of file in Muon_magnets/config/{file_name}
     :rtype: dict
@@ -140,6 +148,7 @@ def load_config(file_name):
         try:
             data[key.strip()] = float(value.strip())
         except ValueError:
-            print(f"\"{item}\" is not float. Trying bool...")
-            data[key.strip()] = bool(value.strip())
+            #print(f"\"{item}\" is not float. Converting to bool...")
+            data[key.strip()] = True if value.strip().lower() == "true" else False
+            #print(f"Converted {key.strip()} to bool -> {data[key.strip()]}")
     return data
