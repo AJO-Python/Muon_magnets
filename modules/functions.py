@@ -1,7 +1,7 @@
 import numpy as np
-"""
-VECTOR FUNCTIONS
-"""
+# =============================================================================
+# VECTOR FUNCTIONS
+# =============================================================================
 def get_mag(vector):
     """
     :param array vector: Vector to operate on
@@ -35,11 +35,9 @@ def get_angle(vec1, vec2):
     dot = sum(x * y for x, y in zip(vec1, vec2))
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
     return np.arccos(dot / (mag1 * mag2))
-
-"""
-PARTICLE FUNCTIONS
-"""
-
+# =============================================================================
+# PARTICLE FUNCTIONS
+# =============================================================================
 def detect_asym(Nf, Nb):
     """
     :param int Nf: Number of counts in forward detector
@@ -86,10 +84,9 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
         chunks[i] = list_to_chunk[chunk_start:chunk_start + freq]
         chunk_start += freq
     return chunks
-
-"""
-DATA SAVE/LOAD FUNCTIONS
-"""
+# =============================================================================
+# DATA SAVE
+# =============================================================================
 def save_array(filename, **kwargs):
     """
     :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
@@ -114,15 +111,39 @@ def save_object(filename, obj):
     file_path = f"../data/{filename}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-
-def load_object(filename):
+# =============================================================================
+# DATA LOAD
+# =============================================================================
+def load_object(file_name):
     """
     :param filename: Will load from "Muon_magnets/data/{filename}.pickle"
     :rtype: object
     :return: Object stored in file
     """
     import pickle
-    file_path = f"../data/{filename}.pickle"
-    with open(file_path, 'rb') as output:  # Overwrites any existing file.
+    file_path = f"../data/{file_name}.pickle"
+    with open(file_path, 'r') as output:  # Open as read
         return pickle.load(output)
+
+def load_config(file_name):
+    """
+    The config file can have either floats or bools as options
+    All variables must be on a newline and seperated from its value by "="
+    :param str file_name: Name of file in Muon_magnets/config/{file_name}
+    :rtype: dict
+    :return: Dictionary of config variables
+    """
+    # Load file as all string
+    load_data = np.loadtxt(f"../config/{file_name}.txt",
+                           delimiter="\n",
+                           dtype=str)
+    # Unpack into a dictionary and convert to float/bool
+    data = {}
+    for item in load_data:
+        key, value = item.split("=")
+        try:
+            data[key.strip()] = float(value.strip())
+        except ValueError:
+            print(f"\"{item}\" is not float. Trying bool...")
+            data[key.strip()] = bool(value.strip())
+    return data

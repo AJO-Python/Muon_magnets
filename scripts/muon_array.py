@@ -49,32 +49,38 @@ width = 2
 height = 2
 spacing = 3e-6
 
-# Create coordinates for grid
-coords = [(x, y) for x in range(width) for y in range(height)]
-dipole_count = len(coords)
+def main():
+    """
 
-# Create array of dipoles
-dipole_array = np.empty(dipole_count, dtype=object)
-angles = np.random.uniform(0, 360, dipole_count)
-for i, coord in enumerate(coords):
-    dipole_array[i] = Dipole(orientation=angles[i],
-                            coord=coord,
-                            location=(coord[0]*spacing, coord[1]*spacing))
+    """
+    width, height, spacing, orientation = np.loadtxt("dipole_array_config.txt")
 
-# Get size of grid using further dipole
-x_max, y_max = dipole_array[-1].location
+    # Create coordinates for grid
+    coords = [(x, y) for x in range(width) for y in range(height)]
+    dipole_count = len(coords)
 
-# Determine region to calculate field lines/plot over
-field_region = [[0-spacing, x_max+spacing], [0-spacing, y_max+spacing]]
-nx, ny = 50, 50
+    # Create array of dipoles
+    dipole_array = np.empty(dipole_count, dtype=object)
+    angles = np.random.uniform(0, 360, dipole_count)
+    for i, coord in enumerate(coords):
+        dipole_array[i] = Dipole(orientation=angles[i],
+                                coord=coord,
+                                location=(coord[0]*spacing, coord[1]*spacing))
 
-field_region = [[0-spacing, x_max+spacing], [0-spacing, y_max+spacing]]
-x_vals = np.linspace(*field_region[0], nx)
-y_vals = np.linspace(*field_region[1], ny)
+    # Get size of grid using further dipole
+    x_max, y_max = dipole_array[-1].location
 
-Ex, Ey = fill_field_values(dipole_array, x_vals, y_vals)
+    # Determine region to calculate field lines/plot over
+    field_region = [[0-spacing, x_max+spacing], [0-spacing, y_max+spacing]]
+    nx, ny = 50, 50
 
-func.save_array("test", ex=Ex, ey=Ey)
+    field_region = [[0-spacing, x_max+spacing], [0-spacing, y_max+spacing]]
+    x_vals = np.linspace(*field_region[0], nx)
+    y_vals = np.linspace(*field_region[1], ny)
+
+    Ex, Ey = fill_field_values(dipole_array, x_vals, y_vals)
+
+    func.save_array("test", ex=Ex, ey=Ey)
 
 
 # PLOTTING
