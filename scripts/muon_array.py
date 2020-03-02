@@ -19,6 +19,7 @@ def make_grid_and_field():
     Creates and saves an array of dipoles and corresponding fields/locations
     Loads from "dipole_array_config.txt"
     Saves to "Muon_magnets/data/$run_name/..."
+
     :rtype: str
     :return: run_name for use with "load_run()"
     """
@@ -32,7 +33,7 @@ def make_grid_and_field():
     run_name = check_run_name(f"{width}x{height}_{r_angle}_0")
 
     # Create coordinates for grid
-    coords = [(x, y) for x in range(int(data["width"])) for y in range(int(data["height"]))]
+    coords = [(x, y) for x in range(width) for y in range(height)]
     dipole_count = len(coords)
 
     # Create array of dipoles (one for each coordinate)
@@ -43,18 +44,20 @@ def make_grid_and_field():
         angles = np.random.uniform(0, 360, dipole_count)
     else:
         angles = np.full_like(
-                    dipole_array, fill_value=data["angle"], dtype=float)
+            dipole_array, fill_value=data["angle"], dtype=float)
 
     # Fill array with dipoles with $spacing between each point
     spacing = data["spacing"]
     for i, coord in enumerate(coords):
         dipole_array[i] = Dipole(orientation=angles[i],
-                                coord=coord,
-                                location=(coord[0]*spacing, coord[1]*spacing))
+                                 coord=coord,
+                                 location=(coord[0] * spacing, coord[1] * spacing))
 
     # Setup field grid and calculate values
     nx, ny = data["nx"], data["ny"]
-    field_locations = setup_field(dipole_array[-1].location, spacing, nx, ny)
+    field_locations = setup_field(max_loc=dipole_array[-1].location,
+                                  edge_buffer=spacing,
+                                  nx=nx, ny=ny)
     field_values = fill_field_values_2d(dipole_array, **field_locations)
 
     # Save data
@@ -83,18 +86,18 @@ def check_run_name(run_name):
     return run_name
 
 
-def setup_field(max_loc, spacing, nx, ny):
+def setup_field(max_loc, edge_buffer, nx, ny):
     """
     :param tuple max_loc: (X, Y) of furthest dipole
-    :param float spacing: Distance between dipoles
-    :param int nx: Number of x points
-    :param int: ny: Number of y points
+    :param float edge_buffer: Distance around edge of grid to calculate field for
+    :param int nx: Number of field x points
+    :param int ny: Number of field y points
     :rtype: dict
     :return: Dictionary containing coordinates for a field over the dipole array
     """
     x_max, y_max = max_loc
     # Determine region to calculate field lines/plot over
-    field_region = [[0-spacing, x_max+spacing], [0-spacing, y_max+spacing]]
+    field_region = [[0 - edge_buffer, x_max + edge_buffer], [0 - edge_buffer, y_max + edge_buffer]]
     field_locations = {"x_vals": np.linspace(*field_region[0], nx),
                        "y_vals": np.linspace(*field_region[1], ny)}
     return field_locations
@@ -144,6 +147,7 @@ def load_run(run_name):
 if __name__ == "__main__":
 
     run_name = make_grid_and_field()
+
     dipole_data, field_data, loc_data = load_run(run_name)
     dipole_array = dipole_data["dipoles"]
 

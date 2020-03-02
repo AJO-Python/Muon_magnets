@@ -14,3 +14,6 @@ nohup.out
 *.pytest_cache
 *__pycache__
 *.xml
+/.idea/.gitignore
+/.cache/v/cache/lastfailed
+/.idea/Muon_magnets.iml
