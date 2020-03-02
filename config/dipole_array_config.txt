@@ -1,9 +1,7 @@
 # $variable_name = value
-# MUST HAVE: width, height, nx, ny, spacing, angle, random_orientation
+# MUST HAVE: width, height, spacing, angle, random_orientation
 width = 5                   # -> int
 height = 5                  # -> int
-nx = 50                     # -> int
-ny = 50                     # -> int
 spacing = 3e-6              # -> float
 angle = 0                   # -> float
-random_orientation = True   # -> bool
+random_orientation = False   # -> bool
