@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Feb 27 23:26:49 2020
-
-@author: joshowen121
-"""
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,9 +9,9 @@ from modules.dipole import Dipole
 import modules.functions as func
 
 
-def make_grid_and_field():
+def make_dipole_grid():
     """
-    Creates and saves an array of dipoles and corresponding fields/locations
+    Creates and saves an array of dipoles on a grid
     Loads from "dipole_array_config.txt"
     Saves to "Muon_magnets/data/$run_name/..."
 
@@ -53,18 +48,7 @@ def make_grid_and_field():
                                  coord=coord,
                                  location=(coord[0] * spacing, coord[1] * spacing))
 
-    # Setup field grid and calculate values
-    nx, ny = data["nx"], data["ny"]
-    field_locations = setup_field(max_loc=dipole_array[-1].location,
-                                  edge_buffer=spacing,
-                                  nx=nx, ny=ny)
-    field_values = fill_field_values_2d(dipole_array, **field_locations)
-
-    # Save data
     func.save_array(run_name, "dipoles", dipoles=dipole_array)
-    func.save_array(run_name, "fields", **field_values)
-    func.save_array(run_name, "locations", **field_locations)
-
     return run_name
 
 
@@ -84,6 +68,26 @@ def check_run_name(run_name):
             dir_count += 1
             run_name = run_name[:-1] + str(dir_count)
     return run_name
+
+
+def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
+    """
+
+    :param array dipole_array: Array of dipoles in grid
+    :param int nx: Number of x points to calculate field at
+    :param int ny: Number of y points to calculate field at
+    :return: Saves field values and locations to run folder
+    """
+    # Setup field grid and calculate values
+    field_locations = setup_field(max_loc=dipole_array[-1].location,
+                                  edge_buffer=edge_buffer,
+                                  nx=nx, ny=ny)
+    field_values = fill_field_values_2d(dipole_array, **field_locations)
+
+    # Save data
+    func.save_array(run_name, "fields", **field_values)
+    func.save_array(run_name, "locations", **field_locations)
+    return
 
 
 def setup_field(max_loc, edge_buffer, nx, ny):
@@ -127,33 +131,45 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
     return {"Ex": Ex, "Ey": Ey}
 
 
-def load_run(run_name):
+def load_run(run_name, files=[]):
     """
     :param str run_name: Folder run is saved to
     :rtype: Dict
     :return: Three dictionaries with dipole, field, and location data
     """
-    dipole_data = np.load(f"../data/{run_name}/dipoles.npz", allow_pickle=True)
-    print(f"Loaded dipoles")
+    data = np.empty(len(files), dtype=np.ndarray)
+    if files:
+        for i, file in enumerate(files):
+            data[i] = np.load(f"../data/{run_name}/{file}.npz", allow_pickle=True)
+            print(f"Loaded {1}.{file}...")
+        return data
 
-    field_data = np.load(f"../data/{run_name}/fields.npz")
-    print(f"Loaded fields")
+    else:
+        dipole_data = np.load(f"../data/{run_name}/dipoles.npz", allow_pickle=True)
+        print(f"Loaded dipoles")
 
-    loc_data = np.load(f"../data/{run_name}/locations.npz")
-    print(f"Loaded from locations")
+        field_data = np.load(f"../data/{run_name}/fields.npz")
+        print(f"Loaded fields")
 
-    return dipole_data, field_data, loc_data
+        loc_data = np.load(f"../data/{run_name}/locations.npz")
+        print(f"Loaded locations")
+
+        return dipole_data, field_data, loc_data
+
 
 if __name__ == "__main__":
+    nx, ny = 50, 50
+    buffer = 3e-6
 
-    run_name = make_grid_and_field()
-
+    run_name = make_dipole_grid()
+    _dipole_data = load_run(run_name, files=["dipoles"])[0]
+    calc_field_grid(run_name, _dipole_data["dipoles"], edge_buffer=buffer, nx=nx, ny=ny)
     dipole_data, field_data, loc_data = load_run(run_name)
     dipole_array = dipole_data["dipoles"]
 
-    plot_density = 1
+    plot_density = 3
 
-    #PLOTTING
+    # PLOTTING
     fig = plt.figure()
     ax = fig.add_subplot(111)
 

@@ -89,7 +89,10 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
 # =============================================================================
 def save_array(run_name, file_name, **kwargs):
     """
-    :param str filename: Saves to "Muon_magnets/data/{run_name}/{file_name}.npz"
+    Saves arrays to "Muon_magnets/data/{run_name}/{file_name}.npz"
+
+    :param str run_name: Name of run
+    :param str file_name: Name of file
     :param dict kwargs: arrays to save to file
     :return: Saves arrays to a binary .npy file
     """
