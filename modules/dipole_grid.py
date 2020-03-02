@@ -46,7 +46,8 @@ def make_dipole_grid():
     for i, coord in enumerate(coords):
         dipole_array[i] = Dipole(orientation=angles[i],
                                  coord=coord,
-                                 location=(coord[0] * spacing, coord[1] * spacing))
+                                 location=(coord[0] * spacing, coord[1] * spacing),
+                                 strength=data["strength"])
 
     func.save_array(run_name, "dipoles", dipoles=dipole_array)
     return run_name
@@ -131,40 +132,14 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
     return {"Ex": Ex, "Ey": Ey}
 
 
-def load_run(run_name, files=[]):
-    """
-    :param str run_name: Folder run is saved to
-    :rtype: Dict
-    :return: Three dictionaries with dipole, field, and location data
-    """
-    data = np.empty(len(files), dtype=np.ndarray)
-    if files:
-        for i, file in enumerate(files):
-            data[i] = np.load(f"../data/{run_name}/{file}.npz", allow_pickle=True)
-            print(f"Loaded {1}.{file}...")
-        return data
-
-    else:
-        dipole_data = np.load(f"../data/{run_name}/dipoles.npz", allow_pickle=True)
-        print(f"Loaded dipoles")
-
-        field_data = np.load(f"../data/{run_name}/fields.npz")
-        print(f"Loaded fields")
-
-        loc_data = np.load(f"../data/{run_name}/locations.npz")
-        print(f"Loaded locations")
-
-        return dipole_data, field_data, loc_data
-
-
 if __name__ == "__main__":
     nx, ny = 50, 50
     buffer = 3e-6
 
     run_name = make_dipole_grid()
-    _dipole_data = load_run(run_name, files=["dipoles"])[0]
+    _dipole_data = func.load_run(run_name, files=["dipoles"])[0]
     calc_field_grid(run_name, _dipole_data["dipoles"], edge_buffer=buffer, nx=nx, ny=ny)
-    dipole_data, field_data, loc_data = load_run(run_name)
+    dipole_data, field_data, loc_data = func.load_run(run_name)
     dipole_array = dipole_data["dipoles"]
 
     plot_density = 3

@@ -50,11 +50,11 @@ class Dipole():
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
 
-        return mag_perm * (
-                   (3 * relative_loc * (np.dot(temp_moment, relative_loc))
-                    / (magnitude ** 5))
-                    - (temp_moment / (magnitude ** 3))
-                    )
+        return np.array(mag_perm * (
+                (3 * relative_loc * (np.dot(temp_moment, relative_loc))
+                 / (magnitude ** 5))
+                - (temp_moment / (magnitude ** 3))
+        ))
 
     def get_relative_loc(self, other):
         """
