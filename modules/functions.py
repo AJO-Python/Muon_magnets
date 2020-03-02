@@ -163,10 +163,10 @@ def load_run(run_name, files=[]):
     :rtype: Dict
     :return: Three dictionaries with dipole, field, and location data
     """
-    data = np.empty(len(files), dtype=np.ndarray)
+    data = {}
     if files:
         for i, file in enumerate(files):
-            data[i] = np.load(f"../data/{run_name}/{file}.npz", allow_pickle=True)
+            data[file] = np.load(f"../data/{run_name}/{file}.npz", allow_pickle=True)
             print(f"Loaded {1}.{file}...")
         return data
 

@@ -3,7 +3,6 @@
 
 import numpy as np
 import matplotlib as plt
-import
 
 def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
     """

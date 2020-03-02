@@ -4,5 +4,5 @@ width = 5                   # -> int
 height = 5                  # -> int
 spacing = 3e-6              # -> float
 strength = 0.01e-3             # -> float
-angle = 0                   # -> float
+angle = 90                   # -> float
 random_orientation = False  # -> bool
