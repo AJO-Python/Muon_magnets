@@ -3,10 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
 import modules.functions as func
-import modules.muon as mu
-import modules.dipole as dip
 import modules.grid as grid
-import scripts.model_equations
 
 
 def create_field_grid(runname,

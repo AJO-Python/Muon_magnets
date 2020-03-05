@@ -26,7 +26,7 @@ def spread_muons(run_name, N, dipole_array, max_loc, spread=""):
     # Calculate field for each muon
     set_muon_field(dipole_array, particles["muons"])
     save_array(run_name, "muons", **particles)
-    return
+
 
 def make_uniform_muons(N, max_loc):
     """
@@ -85,7 +85,7 @@ def set_muon_field(dipoles, muons):
                 muon.in_island = True
             else:
                 muon.field += dipole.get_mag_field(muon.location)
-    return
+
 
 def is_inside_island(dipole, muon):
     """
@@ -128,7 +128,7 @@ if __name__=="__main__":
     max_loc = dipole_array[-1].location
 
     # Spread muons over dipoles and calculate field values
-    spread_muons(run_name=run_name, N=N, dipole_array=dipole_array, max_loc=max_loc)
+    # spread_muons(run_name=run_name, N=N, dipole_array=dipole_array, max_loc=max_loc)
     muons_data = load_run(run_name, files=["muons"])
     muons = muons_data["muons"]["muons"]
     field_strengths = {"total": np.zeros_like(muons),
@@ -140,13 +140,23 @@ if __name__=="__main__":
         field_strengths["x_axis"][i] = field[0]
         field_strengths["y_axis"][i] = field[1]
 
-
     fig = plt.figure()
-    ax1 = fig.add_subplot(311)
-    ax2 = fig.add_subplot(312)
-    ax3 = fig.add_subplot(313)
-    ax1.hist(field_strengths["total"], bins=100, label="field magnitude")
-    ax2.hist(field_strengths["x_axis"], bins=100, label="x field")
-    ax3.hist(field_strengths["y_axis"], bins=100, label="y field")
-    ax1.legend(loc="best")
-    fig.show()
+    fig, axs = plt.subplots(3, 1)
+    fig.subplots_adjust(hspace=1)
+    ax1, ax2, ax3 = axs
+    ax_dict = {"field magnitude": ax1,
+               "field x width": ax2,
+               "field y width": ax3}
+
+    w_range = (-5e7, 5e7)
+    ax1.hist(field_strengths["total"], bins=100, range=(0, 1e8), label="field magnitude")
+    ax2.hist(field_strengths["x_axis"], bins=100, range=w_range, label="x field")
+    ax3.hist(field_strengths["y_axis"], bins=100, range=w_range, label="y field")
+    for name, ax in ax_dict.items():
+        ax.set_xlabel("Field Strength")
+        ax.set_ylabel("Counts")
+        ax.set_title(name)
+        ax.legend(loc="best")
+        ax.grid()
+    plt.savefig("./images/numerical/field_widths.png", bbox_inches="tight")
+    # fig.show()

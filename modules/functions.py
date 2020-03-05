@@ -166,18 +166,18 @@ def load_run(run_name, files=[]):
     data = {}
     if files:
         for i, file in enumerate(files):
-            data[file] = np.load(f"../data/{run_name}/{file}.npz", allow_pickle=True)
+            data[file] = np.load(f"./data/{run_name}/{file}.npz", allow_pickle=True)
             print(f"Loaded {1}.{file}...")
         return data
 
     else:
-        dipole_data = np.load(f"../data/{run_name}/dipoles.npz", allow_pickle=True)
+        dipole_data = np.load(f"./data/{run_name}/dipoles.npz", allow_pickle=True)
         print(f"Loaded dipoles")
 
-        field_data = np.load(f"../data/{run_name}/fields.npz")
+        field_data = np.load(f"./data/{run_name}/fields.npz")
         print(f"Loaded fields")
 
-        loc_data = np.load(f"../data/{run_name}/locations.npz")
+        loc_data = np.load(f"./data/{run_name}/locations.npz")
         print(f"Loaded locations")
 
         return dipole_data, field_data, loc_data

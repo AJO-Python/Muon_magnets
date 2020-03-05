@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib as plt
+import modules.fuctions as func
 
 def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
     """
@@ -21,7 +22,6 @@ def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
     # Save data
     func.save_array(run_name, "fields", **field_values)
     func.save_array(run_name, "locations", **field_locations)
-    return
 
 
 def setup_field(max_loc, edge_buffer, nx, ny):
