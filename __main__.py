@@ -3,10 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
 import modules.functions as func
-import modules.muon as mu
-import modules.dipole as dip
 import modules.grid as grid
-import scripts.model_equations
 
 
 def create_field_grid(runname,
@@ -21,7 +18,7 @@ def create_field_grid(runname,
     real_locs_x = np.arange(0, x_max, field_spacing)
     real_locs_y = np.arange(0, y_max, field_spacing)
     locations = np.array([real_locs_x, real_locs_y])
-    
+
     # Get field values over field array
     Ex, Ey = dipole_grid.fill_field_values(real_locs_x, real_locs_y)
 
@@ -39,7 +36,7 @@ def create_field_grid(runname,
 x_points = 3
 y_points = 1
 field_sample_spacing = 2e-7
-dipole_spacing=3e-6
+dipole_spacing = 3e-6
 random = False
 runname = "5x2_1e7_U"
 

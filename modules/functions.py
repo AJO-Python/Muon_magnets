@@ -6,7 +6,7 @@ def get_mag(vector):
     """
     :param array vector: Vector to operate on
     :rtype: float
-    :return: Mangitude of $vector
+    :return: Magnitude of $vector
     """
     vector = np.array(vector)
     return np.sqrt(np.dot(vector, vector))
@@ -89,7 +89,10 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
 # =============================================================================
 def save_array(run_name, file_name, **kwargs):
     """
-    :param str filename: Saves to "Muon_magnets/data/{run_name}/{file_name}.npz"
+    Saves arrays to "Muon_magnets/data/{run_name}/{file_name}.npz"
+
+    :param str run_name: Name of run
+    :param str file_name: Name of file
     :param dict kwargs: arrays to save to file
     :return: Saves arrays to a binary .npy file
     """
@@ -152,3 +155,29 @@ def load_config(file_name):
             data[key.strip()] = True if value.strip().lower() == "true" else False
             #print(f"Converted {key.strip()} to bool -> {data[key.strip()]}")
     return data
+
+
+def load_run(run_name, files=[]):
+    """
+    :param str run_name: Folder run is saved to
+    :rtype: Dict
+    :return: Three dictionaries with dipole, field, and location data
+    """
+    data = {}
+    if files:
+        for i, file in enumerate(files):
+            data[file] = np.load(f"./data/{run_name}/{file}.npz", allow_pickle=True)
+            print(f"Loaded {1}.{file}...")
+        return data
+
+    else:
+        dipole_data = np.load(f"./data/{run_name}/dipoles.npz", allow_pickle=True)
+        print(f"Loaded dipoles")
+
+        field_data = np.load(f"./data/{run_name}/fields.npz")
+        print(f"Loaded fields")
+
+        loc_data = np.load(f"./data/{run_name}/locations.npz")
+        print(f"Loaded locations")
+
+        return dipole_data, field_data, loc_data
