@@ -40,6 +40,7 @@ class Island(Dipole):
         ])
         self.corners = self.rotate(corners)
 
+
     def rotate(self, corners):
         """
         Applies rotation matrix to corners around centre of island
@@ -60,7 +61,7 @@ class Island(Dipole):
 
 if __name__ == "__main__":
     sample = Island(orientation=0, strength=1,
-                    size=(3, 2), location=[-1, -1])
+                    size=(2, 2), location=[0, 0])
     names = iter(["TL", "TR", "BL", "BR"])
     plt.figure()
     for i, (x, y) in enumerate(sample.corners):
