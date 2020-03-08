@@ -41,3 +41,8 @@ def test_rotate(test_island):
     test_island.orientation_r = np.pi / 2
     test_point = [1, 2]
     assert list(test_island.rotate(test_point)) == [0, 1]
+
+def test_contains_point(test_island):
+    assert test_island.contains_point([[0, 0]]) == True
+    assert test_island.contains_point([[2, 2]]) == False
+    assert test_island.contains_point([[1, 1]]) == False  # On the line is false
