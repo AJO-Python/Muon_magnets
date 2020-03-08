@@ -9,7 +9,7 @@ from modules.dipole import Dipole
 import modules.functions as func
 
 
-def make_dipole_grid():
+def make_dipole_grid(config_file="", **kwargs):
     """
     Creates and saves an array of dipoles on a grid
     Loads from "dipole_array_config.txt"
@@ -19,7 +19,10 @@ def make_dipole_grid():
     :return: run_name for use with "load_run()"
     """
     # Load configuration for run
-    data = func.load_config("dipole_array_config")
+    if not config_file:
+        # print("Using default value")
+        config_file = "dipole_array_config"
+    data = func.load_config(config_file)
     width = int(data["width"])
     height = int(data["height"])
     r_angle = 'R' if data['random_orientation'] else 'U'
@@ -33,14 +36,7 @@ def make_dipole_grid():
 
     # Create array of dipoles (one for each coordinate)
     dipole_array = np.empty(dipole_count, dtype=object)
-
-    # Set dipole angles
-    if data["random_orientation"]:
-        angles = np.random.uniform(0, 360, dipole_count)
-    else:
-        angles = np.full_like(
-            dipole_array, fill_value=data["angle"], dtype=float)
-
+    angles = set_angles(dipole_array, data, data["random_orientation"])
     # Fill array with dipoles with $spacing between each point
     spacing = data["spacing"]
     for i, coord in enumerate(coords):
@@ -49,6 +45,13 @@ def make_dipole_grid():
                                  location=(coord[0] * spacing, coord[1] * spacing),
                                  strength=data["strength"])
 
+    # Can return the array for testing the function
+    for key, value in kwargs.items():
+        if key == "testing" and value == True:
+            print("In testing mode")
+            return dipole_array
+
+    # If not testing save array to file
     func.save_array(run_name, "dipoles", dipoles=dipole_array)
     return run_name
 
@@ -73,6 +76,22 @@ def check_run_name(run_name):
             else:
                 run_name = run_name[:-2] + str(dir_count)
     return run_name
+
+
+def set_angles(dipoles, data, random):
+    """
+    Create array of angles to assign to dipoles
+    :param dipoles: array of dipoles
+    :param random:
+    :return:
+    """
+    # Set dipole angles
+    if random:
+        angles = np.random.uniform(0, 360, len(dipoles))
+    else:
+        angles = np.full_like(
+            dipoles, fill_value=data["angle"], dtype=float)
+    return angles
 
 
 if __name__ == "__main__":

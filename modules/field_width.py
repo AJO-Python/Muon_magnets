@@ -81,7 +81,8 @@ def set_muon_field(dipoles, muons):
             # Checks if muon is inside a nano-island
             if is_inside_island(dipole, muon):
                 # TODO Add behaviour for inside nano-island
-                #muon.field += dipole.get_internal_field(muon.location)
+                # Model dipoles as solenoid?
+                # muon.field += dipole.get_internal_field(muon.location)
                 muon.in_island = True
             else:
                 muon.field += dipole.get_mag_field(muon.location)
@@ -94,16 +95,18 @@ def is_inside_island(dipole, muon):
     :rtype: bool
     :return: True if muon is inside dipole
     """
+    # TODO: Be able to work with any orientation
+    # Try raycasting?
     # Check if muon is inside x_coords
-    if ( (muon.location[0] <= dipole.location[0] + 350e-9)
-        and (muon.location[0] >= dipole.location[0] - 350e-9)):
+    if ((muon.location[0] <= dipole.location[0] + 350e-9)
+            and (muon.location[0] >= dipole.location[0] - 350e-9)):
         inside_x = True
     else:
         return False  # Early exit condition
 
     # Check if muon is inside y_coords
-    if ( (muon.location[1] <= dipole.location[1] + 8e-7)
-        and (muon.location[1] >= dipole.location[1] - 8e-7)):
+    if ((muon.location[1] <= dipole.location[1] + 8e-7)
+            and (muon.location[1] >= dipole.location[1] - 8e-7)):
         return inside_x
     else:
         return False
