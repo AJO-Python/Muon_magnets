@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 
 class Island(Dipole):
 
-    def __init__(self, orientation=0, coord=[0, 0, 0],
+    def __init__(self,
+                 orientation=0,
+                 coord=[0, 0, 0],
                  strength=1e-3,
                  size=(1e-8, 2e-8),
                  location=[0, 0, 0]):
