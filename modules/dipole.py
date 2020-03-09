@@ -5,7 +5,9 @@ import modules.grid as grid
 
 class Dipole():
     """
-    Creates a dipole object to be placed on a Modules.Grid() point
+    Creates a dipole with a defined coordinate on a grid and a magnetic moment
+    The magnetic field can be calculated at any point around dipole with
+    get_mag_field()
     """
     count = 0
 
