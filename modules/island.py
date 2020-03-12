@@ -25,6 +25,8 @@ class Island(Dipole):
     def set_corners(self):
         """
         Calculates corners relative to centre
+        Sets self.corners and self.path (for use with drawing the islands)
+
         :return: set self.corners, set self.path
         """
         half_width = self.size[0] / 2

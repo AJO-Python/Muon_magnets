@@ -30,7 +30,7 @@ def get_angle(vec1, vec2):
     :param array vec1: First vector
     :param array vec2: Second vector
     :rtype: float
-    :return: Angle between $vec1 and $vec2 in radians {-pi/2, pi/2
+    :return: Angle between $vec1 and $vec2 in radians {-pi/2, pi/2}
     """
     dot = sum(x * y for x, y in zip(vec1, vec2))
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
