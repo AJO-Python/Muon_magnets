@@ -53,7 +53,7 @@ class Dipole():
         if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
         temp_moment = self.moment[:len(target)]  # Ensure moment is correct dimension
-        mag_perm = 10e-7  # Cancel constant terms to get mag_perm as only constant
+        mag_perm = 1e-7  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
 
