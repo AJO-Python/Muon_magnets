@@ -17,4 +17,5 @@ nohup.out
 /.idea/.gitignore
 /.cache/v/cache/lastfailed
 /.idea/Muon_magnets.iml
-*.venv
+.venv
+.idea/sonarlint/
