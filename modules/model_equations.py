@@ -106,5 +106,5 @@ if __name__ == "__main__":
     plt.title("Longitudinal (-z) Gaussian Kubo-Toyabe function ($G^{G}_{z}(t)$)")
     plt.legend(loc="best", fontsize="small")
     # plt.plot(time, av_data, "r--", label="Average")
-    plt.savefig("Images/Analytical/long_rev_GKT.png", bbox_inches="tight")
+    plt.savefig("images/analytical/long_rev_GKT_1.png", bbox_inches="tight")
     plt.show()

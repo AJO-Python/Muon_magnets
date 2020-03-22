@@ -20,7 +20,6 @@ class Dipole():
         :param float orientation: Angle of dipole in degrees (+ve x = 0)
         :param array coord: Index of dipole [x, y, z]
         :param float strength: Magnetic field strength (Tesla)
-        :param tuple (float, float) size: x and y length of dipole
         :param dict kwargs: attributes and their values to set
         """
         self.coord = np.array(coord)

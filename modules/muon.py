@@ -126,10 +126,14 @@ class Muon:
                              np.exp(-0.5 * (width ** 2) * (self.lifetime ** 2)))
 
     def feel_dipole(self, dipole):
-
+        """
+        :param object dipole: Dipole for muon to respond to
+        :return: 
+        """
         try:
             self.field += dipole.get_mag_field(self.location)
         except AttributeError:
+            # Catch error if this is first field muon "feels"
             self.field = dipole.get_mag_field(self.location)
         field_mag = func.get_mag(self.field)
         field_dir = func.get_unit_vector(self.field)

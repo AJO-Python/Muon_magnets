@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy as sci
 
 from modules.muon import Muon
 from modules.dipole_grid import make_dipole_grid
