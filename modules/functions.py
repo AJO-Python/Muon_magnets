@@ -1,4 +1,6 @@
 import numpy as np
+
+
 # =============================================================================
 # VECTOR FUNCTIONS
 # =============================================================================
@@ -35,6 +37,43 @@ def get_angle(vec1, vec2):
     dot = sum(x * y for x, y in zip(vec1, vec2))
     mag1, mag2 = get_mag(vec1), get_mag(vec2)
     return np.arccos(dot / (mag1 * mag2))
+
+
+def normalise(arr):
+    """
+    :param array arr: Input array to normalise
+    :rtype: array
+    :return: Normalised array
+    """
+    norm = np.sqrt((arr ** 2).sum())
+    if norm == 0:
+        return arr
+    return arr / norm
+
+
+def get_limits(arr):
+    """
+    :param array arr: Data to get plotting limits for
+    :rtype: tuple(float, float)
+    :return: min and max for plotting arr
+    """
+    spread = max(arr) - min(arr)
+    small = min(arr) - spread / 20
+    big = max(arr) + spread / 20
+    return (small, big)
+
+
+def make_fancy_plot(fig, ax):
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import ScalarFormatter, AutoMinorLocator
+    plt.style.use("./config/fancy_plots.mplstyle")
+    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ax.yaxis.major.formatter._useMathText = True
+    ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+    ax.xaxis.set_minor_locator(AutoMinorLocator(5))
+    return fig, ax
+
+
 # =============================================================================
 # PARTICLE FUNCTIONS
 # =============================================================================
@@ -84,6 +123,8 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
         chunks[i] = list_to_chunk[chunk_start:chunk_start + freq]
         chunk_start += freq
     return chunks
+
+
 # =============================================================================
 # DATA SAVE
 # =============================================================================
@@ -119,6 +160,8 @@ def save_object(filename, obj):
     file_path = f"../data/{filename}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+
 # =============================================================================
 # DATA LOAD
 # =============================================================================
@@ -132,6 +175,7 @@ def load_object(file_name):
     file_path = f"../data/{file_name}.pickle"
     with open(file_path, 'r') as output:  # Open as read
         return pickle.load(output)
+
 
 def load_config(file_name):
     """
@@ -151,9 +195,9 @@ def load_config(file_name):
         try:
             data[key.strip()] = float(value.strip())
         except ValueError:
-            #print(f"\"{item}\" is not float. Converting to bool...")
+            # print(f"\"{item}\" is not float. Converting to bool...")
             data[key.strip()] = True if value.strip().lower() == "true" else False
-            #print(f"Converted {key.strip()} to bool -> {data[key.strip()]}")
+            # print(f"Converted {key.strip()} to bool -> {data[key.strip()]}")
     return data
 
 
