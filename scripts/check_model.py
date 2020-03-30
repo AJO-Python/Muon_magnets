@@ -84,7 +84,7 @@ def check_precession():
     lifes = np.linspace(0, 20e-6, 100)
 
     fig, ax = plt.subplots()
-    ax.plot(lifes, polarisation_func(lifes, larmour))
+    ax.plot(lifes, polarisation_func(lifes, larmour), label="precession")
     ax.legend(loc="best")
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Polarisation")
@@ -120,19 +120,22 @@ def check_1d_dipole():
     fit_targets = np.linspace(min(targets), max(targets), 100)
 
     # PLOT
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(1, 1)
+    plt.tight_layout()
+    fig, ax = func.make_fancy_plot(fig, ax)
     ax.scatter(targets, normed_forces, label="Calculated field", marker="x", color="k")
     ax.plot(fit_targets, cubic(fit_targets, *popt), label="$k/r^3$ fit")
-    ax.set_ylim(func.get_limits(normed_forces))
+    # ax.set_ylim(func.get_limits(normed_forces))
+    # ax.set_ylim(0, 1)
     ax.set_xlim(func.get_limits(targets))
     ax.legend(loc="best")
-    ax.set_xlabel("Distance from dipole (m)")
+    ax.set_xlabel("Distance from dipole (1/m^3)")
     ax.set_ylabel("Normalised field strength B(r) (arb. units)")
     ax.set_title("Dipole field strength against separation (1 dimension)")
-    fig, ax = func.make_fancy_plot(fig, ax)
-    ax.ticklabel_format(axis="x", style="sci", scilimits=(-5, -5))
+
+    ax.ticklabel_format(axis="x", style="sci", scilimits=(0, 0))
     ax.grid()
-    plt.savefig("images/1d_field.png", bbox_inches="tight", dpi=300)
+    fig.savefig("images/1d_field.png", bbox_inches="tight", dpi=300)
 
 
 def mag_field_1d(source, target):
