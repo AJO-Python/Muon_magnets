@@ -153,8 +153,8 @@ def save_array(run_name, file_name, **kwargs):
 
 def save_object(filename, obj):
     """
-    :param filename: Will save to "Muon_magnets/data/{filename}.txt"
-    :param obj: Object to save
+    :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
+    :param object obj: Object to save
     """
     import pickle
     file_path = f"../data/{filename}.pickle"
@@ -167,7 +167,7 @@ def save_object(filename, obj):
 # =============================================================================
 def load_object(file_name):
     """
-    :param filename: Will load from "Muon_magnets/data/{filename}.pickle"
+    :param str filename: Will load from "Muon_magnets/data/{filename}.pickle"
     :rtype: object
     :return: Object stored in file
     """

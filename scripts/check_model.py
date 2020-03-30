@@ -12,23 +12,24 @@ import modules.functions as func
 def check_calculations():
     island = Island(orientation=0,
                     coord=[0, 0],
-                    strength=1e-8,
+                    strength=8e-8,
                     size=(0.00002, 0.00002),
                     location=[0, 0])
 
-    muon = Muon(location=[5, 0],
+    muon = Muon(location=[100e-6, 0],
                 spin_dir=[-1, 0],
                 lifetime=1)
 
     field_calc = island.get_mag_field(muon.location)
-    print("""By hand calculation for field at (5, 0)m from point dipole at (0, 0)m with\n
-          strength = 1 T\n
+    hand_calc = 800e3
+    print(f"""By hand calculation for field at (100e-6, 0)m from point dipole at (0, 0)m with\n
+          strength = 1e-8 T\n
           orientation = 0 deg\n
-          B field = 1.6e-9 T""")
+          B field = {hand_calc} T (NEEDS RECALCULATING)""")
     print(f"Island has magnetic moment {island.moment}")
     print("Field experienced by muon is:")
-    print("Hand calculation: [1.6e-9, 0] T")
-    print(f"Model calculation: {field_calc} T")
+    print(f"    Hand calculation: {hand_calc} T")
+    print(f"    Model calculation: {field_calc} T")
 
     ########################################################
     print("""\n
@@ -59,13 +60,11 @@ def check_muon_dipoles():
     locations = np.linspace(40e-6, 600e-6, 80)
     muons, fields = [], []
     for loc in locations:
-        temp_muon = Muon(location=[loc, 0, 400e-6])
+        temp_muon = Muon(location=[loc, 0, 100e-6])
         temp_muon.feel_dipole(island)
         muons.append(temp_muon)
         fields.append(func.get_mag(temp_muon.field))
-    fields_normed = [float(i) / max(fields) for i in fields]
     fields = np.array(fields)
-
     plt.figure()
     plt.scatter(locations, fields, label="Muons")
     plt.legend(loc="best")
@@ -161,6 +160,7 @@ def mag_field_1d(source, target):
              / (magnitude ** 5))
             - (moment / (magnitude ** 3))
     ))
+    # Simplified field calculation for debugging in 1d
     # fields = np.array(mag_perm * (
     #     2*moment / (relative_loc**3)
     # ))
@@ -172,11 +172,22 @@ def cubic(x, m):
     return 2 * m / (x ** 3)
 
 
+def check_relaxation():
+
+    island = Island(orientation=0,
+                    coord=[0, 0],
+                    strength=1e-8,
+                    size=(0.00002, 0.00002),
+                    location=[0, 0])
+
+    muon = Muon(location=[100e-6, 0],
+                spin_dir=[-1, 0],
+                lifetime=1)
 angles = np.random.uniform(0, 6.28, 10)
 ensemble = [Dipole(angle, [0, 0, 0], 3) for i, angle in enumerate(angles)]
 
 if __name__ == "__main__":
     check_calculations()
-    check_muon_dipoles()
-    check_precession()
-    check_1d_dipole(norm=False)
+    #check_muon_dipoles()
+    #check_precession()
+    #check_1d_dipole(norm=False)

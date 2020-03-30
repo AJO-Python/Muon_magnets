@@ -43,7 +43,7 @@ class Dipole():
                 Moment: {}".format(self.coord, self.orientation_d,
                                    self.strength, self.moment))
 
-    def get_mag_field(self, target):
+    def get_mag_field(self,  target):
         """
         :param array target: Target location [x, y, z]
         :return: array of field values at target location
@@ -52,7 +52,7 @@ class Dipole():
         if not len(target) == len(self.location):
             raise ValueError("Dimensions of target and self.location to not match")
         temp_moment = self.moment[:len(target)]  # Ensure moment is correct dimension
-        mag_perm = 1e-7  # Cancel constant terms to get mag_perm as only constant
+        mag_perm = 1.257e-612  # Cancel constant terms to get mag_perm as only constant
         relative_loc = np.subtract(np.array(target), self.location)
         magnitude = func.get_mag(relative_loc)
 
