@@ -55,7 +55,7 @@ class Island(Dipole):
         """
         c, s = np.cos(self.orientation_r), np.sin(self.orientation_r)
         rot_matrix = np.array([[c, -s], [s, c]])
-        origin = np.atleast_2d(self.location)
+        origin = np.atleast_2d(self.location[:2])
         points = np.atleast_2d(corners)
         return np.squeeze((rot_matrix @ (points.T - origin.T) + origin.T).T)
 
