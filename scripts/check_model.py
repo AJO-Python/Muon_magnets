@@ -13,7 +13,7 @@ def check_calculations():
     island = Island(orientation=0,
                     coord=[0, 0],
                     strength=1e-8,
-                    size=(2, 2),
+                    size=(0.00002, 0.00002),
                     location=[0, 0])
 
     muon = Muon(location=[5, 0],
@@ -52,14 +52,14 @@ Test field drops as expected
 
 def check_muon_dipoles():
     island = Island(orientation=0,
-                    coord=[0, 0],
+                    coord=[0, 0, 0],
                     strength=1e-8,
                     size=(2, 2),
-                    location=[0, 0])
+                    location=[0, 0, 0])
     locations = np.linspace(40e-6, 600e-6, 80)
     muons, fields = [], []
     for loc in locations:
-        temp_muon = Muon(location=[loc, 0])
+        temp_muon = Muon(location=[loc, 0, 400e-6])
         temp_muon.feel_dipole(island)
         muons.append(temp_muon)
         fields.append(func.get_mag(temp_muon.field))
@@ -69,10 +69,12 @@ def check_muon_dipoles():
     plt.figure()
     plt.scatter(locations, fields, label="Muons")
     plt.legend(loc="best")
+    plt.title("3d muon-dipole interaction (z=400 um")
     plt.ylabel("Field strength")
     plt.xlabel("Distance from dipole (m)")
     plt.xlim(func.get_limits(locations))
     plt.ylim(func.get_limits(fields))
+    plt.grid()
     plt.savefig("images/field_distance.png", bbox_inches="tight")
 
 
@@ -105,7 +107,7 @@ def polarisation_func(lifetime, larmour):
 ####################################
 # Plot 1d field for dipole
 
-def check_1d_dipole():
+def check_1d_dipole(norm=False):
     """
     Plots and checks that the dipole in 1D works as expected
     """
@@ -113,29 +115,32 @@ def check_1d_dipole():
     source = 0
     targets = np.linspace(20e-6, 100e-6, 20, endpoint=True)
     forces, indices_to_remove = mag_field_1d(source, targets)
-    normed_forces = func.normalise(forces)
-    targets = np.delete(targets, indices_to_remove)
+    if norm:
+        forces = func.normalise(forces)
+    # targets = np.delete(targets, indices_to_remove)
     # Curve fit
-    popt, pcov = curve_fit(cubic, targets, normed_forces)
+    popt, pcov = curve_fit(cubic, targets, forces)
     fit_targets = np.linspace(min(targets), max(targets), 100)
-
+    fit_forces = cubic(fit_targets, *popt)
     # PLOT
     fig, ax = plt.subplots(1, 1)
     plt.tight_layout()
     fig, ax = func.make_fancy_plot(fig, ax)
-    ax.scatter(targets, normed_forces, label="Calculated field", marker="x", color="k")
-    ax.plot(fit_targets, cubic(fit_targets, *popt), label="$k/r^3$ fit")
-    # ax.set_ylim(func.get_limits(normed_forces))
+    ax.scatter(targets, forces, label="Calculated field", marker="x", color="k")
+    ax.plot(fit_targets, fit_forces, label="$k/r^3$ fit")
+    ax.set_ylim(func.get_limits(fit_forces))
     # ax.set_ylim(0, 1)
     ax.set_xlim(func.get_limits(targets))
     ax.legend(loc="best")
-    ax.set_xlabel("Distance from dipole (1/m^3)")
+    ax.set_xlabel("Distance from dipole (m)")
     ax.set_ylabel("Normalised field strength B(r) (arb. units)")
     ax.set_title("Dipole field strength against separation (1 dimension)")
-
     ax.ticklabel_format(axis="x", style="sci", scilimits=(0, 0))
     ax.grid()
-    fig.savefig("images/1d_field.png", bbox_inches="tight", dpi=300)
+    filename = "images/1d_field_norm.png" if norm else "images/1d_field.png"
+    print(f"File saved as: {filename}")
+    print(f"Field at 100e-6: {forces[-1]}")
+    fig.savefig(filename, bbox_inches="tight", dpi=300)
 
 
 def mag_field_1d(source, target):
@@ -174,4 +179,4 @@ if __name__ == "__main__":
     check_calculations()
     check_muon_dipoles()
     check_precession()
-    check_1d_dipole()
+    check_1d_dipole(norm=False)
