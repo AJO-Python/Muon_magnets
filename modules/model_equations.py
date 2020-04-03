@@ -1,9 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 from scipy import integrate
 import modules.muon as mu
-import modules.dipole as dip
 
 mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
 mpl.rcParams["axes.grid"] = True  # Turns grid on
@@ -14,7 +11,7 @@ def static_GKT(time, width):
     :param float width: Guassian width parameter for internal field
     :return: array
     """
-    sigma = mu.Muon.gyro_ratio * width
+    sigma = mu.Muon.GYRO_RATIO * width
     sig_t_sq = (sigma ** 2) * (time ** 2)
     return ((1 / 3) + ((2 / 3)
                        * (1 - sig_t_sq)
@@ -29,8 +26,8 @@ def longitudinal_GKT(time, width, ext_field_in_axis):
     :param float ext_field_in_axis: External applied field
     :return: array
     """
-    omega = mu.Muon.gyro_ratio * ext_field_in_axis
-    sigma = mu.Muon.gyro_ratio * width
+    omega = mu.Muon.GYRO_RATIO * ext_field_in_axis
+    sigma = mu.Muon.GYRO_RATIO * width
     sigma_t = (sigma ** 2) * (time ** 2)
 
     # Split equation into three parts to ensure correct translation into code
@@ -65,7 +62,7 @@ def static_LKT(time, width):
     :param float width: Lorentzian width parameter for internal field
     :return: array
     """
-    a = mu.Muon.gyro_ratio * width
+    a = mu.Muon.GYRO_RATIO * width
     at = time * a
     return ((1 / 3) - ((2 / 3)
                        * (1 - at)
@@ -80,12 +77,16 @@ def transverse_LKT(time, width, ext_field_in_axis):
     :param float ext_field_in_axis: External applied field
     :return: array
     """
-    omega = mu.Muon.gyro_ratio * ext_field_in_axis
-    sigma = mu.Muon.gyro_ratio * width
+    omega = mu.Muon.GYRO_RATIO * ext_field_in_axis
+    sigma = mu.Muon.GYRO_RATIO * width
     sigma_t = (sigma ** 2) * (time ** 2)
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import matplotlib as mpl
+    import modules.dipole as dip
+
     widths = np.logspace(-4, -3, 5, dtype=float)  # Tesla
     time = np.linspace(0, 20e-6, 150)
     output = np.zeros([len(widths), len(time)])

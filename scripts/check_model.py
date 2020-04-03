@@ -186,6 +186,8 @@ def check_relaxation():
     muon = Muon(location=[100e-6, 0],
                 spin_dir=[-1, 0],
                 lifetime=1)
+
+
 angles = np.random.uniform(0, 6.28, 10)
 ensemble = [Dipole(angle, [0, 0, 0], 3) for i, angle in enumerate(angles)]
 
