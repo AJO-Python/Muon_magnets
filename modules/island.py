@@ -1,13 +1,15 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.path as mpltPath
 from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
 from modules.dipole import Dipole
 import modules.functions as func
 
 
 class Island(Dipole):
-
+    counter = 0
     def __init__(self,
                  orientation=0,
                  coord=[0, 0, 0],
@@ -25,11 +27,13 @@ class Island(Dipole):
         :param dict kwargs: attributes and their values to set
         """
         super().__init__(orientation, coord, strength)
-        self.size = size
+        self.size = np.asarray(size)
         self.area = self.size[0] * self.size[1]
         self.location = location
         self.set_corners()
         self.set_current()
+        Island.counter += 1
+        self.ID = Island.counter
 
     def set_corners(self):
         """
@@ -65,7 +69,10 @@ class Island(Dipole):
         self.corners = np.squeeze((rot_matrix @ (points.T - origin.T) + origin.T).T)
 
     def contains_points(self, points):
-        return self.path.contains_points(points)
+        inside_indices = self.path.contains_points(points)
+        self.inside_muons = sum(inside_indices)
+        print(self.inside_muons)
+        return inside_indices
 
     def set_current(self):
         self.current = np.array([self.area * self.moment])
@@ -80,13 +87,30 @@ class Island(Dipole):
                          )
         return arrow
 
+    def get_outline(self, line_width=0.1):
+        """
+        Creates a Rectangle patch to outline the Island
+        :param float line_width: Width of outline
+        :param str ouline_color: Color of outline (Must be color from matplotlib)
+        :rtype: object
+        :return: Rectangle patch
+        """
+        rectangle = Rectangle(xy=(0, 0),
+                              width=self.size[0],
+                              height=self.size[1],
+                              angle=self.orientation_d,
+                              fill=False,
+                              edgecolor="k",
+                              lw=0.1)
+        rectangle.set_xy(self.corners[3])
+        return rectangle
 
 if __name__ == "__main__":
 
     num_muons = 10_0000
     island_size = (1.6e-6, 700e-9)
-    grid_size = 5e-6
-    num_islands = 20
+    grid_size = 10e-6
+    num_islands = 10
 
     # Setup muons
     grid = (-grid_size, grid_size)
@@ -106,17 +130,17 @@ if __name__ == "__main__":
     fig, ax = plt.subplots()
 
     # Add moment arrows
-    for i in islands:
-        print("___")
-        print(i.location)
-        print("___")
-        ax.add_patch(i.get_moment_arrow())
+    for isle in islands:
+        print("----")
+        print(isle.ID)
+        ax.add_patch(isle.get_moment_arrow())
+        ax.add_patch(isle.get_outline())
 
     # Add muons
     ax.scatter(points[:, 0], points[:, 1],
                c=colors,
                marker="o",
-               s=0.1,
+               s=0.2,
                edgecolors="none")
     # Add legend
     legend_handles = {Line2D([0], [0],

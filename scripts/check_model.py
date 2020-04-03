@@ -55,15 +55,17 @@ def check_muon_dipoles():
     island = Island(orientation=0,
                     coord=[0, 0, 0],
                     strength=1e-8,
-                    size=(2, 2),
+                    size=(0.00002, 0.00002),
                     location=[0, 0, 0])
-    locations = np.linspace(40e-6, 600e-6, 80)
-    muons, fields = [], []
-    for loc in locations:
-        temp_muon = Muon(location=[loc, 0, 100e-6])
+    num_muons = 80
+    locations = np.linspace(40e-6, 600e-6, num_muons)
+    fields = np.zeros(num_muons, dtype=float)
+    muons = np.zeros(num_muons, dtype=object)
+    for i, loc in enumerate(locations):
+        temp_muon = Muon(location=[loc, 0, 100e-9])
         temp_muon.feel_dipole(island)
-        muons.append(temp_muon)
-        fields.append(func.get_mag(temp_muon.field))
+        muons[i] = temp_muon
+        fields[i] = func.get_mag(temp_muon.field)
     fields = np.array(fields)
     plt.figure()
     plt.scatter(locations, fields, label="Muons")
@@ -73,6 +75,7 @@ def check_muon_dipoles():
     plt.xlabel("Distance from dipole (m)")
     plt.xlim(func.get_limits(locations))
     plt.ylim(func.get_limits(fields))
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(0, 0))
     plt.grid()
     plt.savefig("images/field_distance.png", bbox_inches="tight")
 
@@ -187,7 +190,7 @@ angles = np.random.uniform(0, 6.28, 10)
 ensemble = [Dipole(angle, [0, 0, 0], 3) for i, angle in enumerate(angles)]
 
 if __name__ == "__main__":
-    check_calculations()
-    #check_muon_dipoles()
-    #check_precession()
-    #check_1d_dipole(norm=False)
+    # check_calculations()
+    check_muon_dipoles()
+    # check_precession()
+    # check_1d_dipole(norm=False)

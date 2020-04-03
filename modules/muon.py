@@ -19,6 +19,7 @@ class Muon:
         """
         Initialises each muon object with a lifetime and optional kwargs
 
+        :rtype: object
         :param dict kwargs: Additional properties and values to give to muon
         """
         self.set_lifetime(np.random.rand(1))  # Set this before kwargs so it can be overwritten if needed
