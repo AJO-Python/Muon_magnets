@@ -7,25 +7,25 @@ class Muon:
     Makes an object representing a muon decaying at a set location in a magnetic field
     """
     MASS = 1.883531627e-28
-    charge = 1
-    mass_energy = 105.6583745e6
-    halflife = 2.2969811e-6
-    gyro_ratio = 2 * np.pi * 135.5e6
-    decay_const = np.log(2) / halflife
-    spin_dir = np.array([0, 0, -1])
-    phase = 0
+    MASS_ENERGY = 105.6583745e6
+    HALFLIFE = 2.2969811e-6
+    GYRO_RATIO = 2 * np.pi * 135.5e6
+    DECAY_CONST = np.log(2) / HALFLIFE
 
     def __init__(self, **kwargs):
         """
         Initialises each muon object with a lifetime and optional kwargs
 
-        :rtype: object
         :param dict kwargs: Additional properties and values to give to muon
         """
-        self.set_lifetime(np.random.rand(1))  # Set this before kwargs so it can be overwritten if needed
+        self.set_lifetime(np.random.rand(1))
+        self.spin_dir = np.array([0, 0, -1])
+        self.phase = 0
+        # kwargs last so all previous properties can be overwritten if needed
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+    @property
     def __str__(self):
         """
         :rtpe: str
@@ -33,19 +33,19 @@ class Muon:
         """
         return "\n".join([": ".join((str(att), str(getattr(self, att)))) for att in vars(self)])
 
+    @property
     def __repr__(self):
         return f"Muon at {self.location}"
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """
-        Must set Muon.phase before calling apply_field
         Sets muon attributes if field is present
 
         :param array field_dir: (x,y,z) unit vector for field
         :param float field_strength: Strength of field at muon
         :param bool random_phase: Choose to randomise muon phase
         :rtype: setter
-        :return: Sets
+        :return: None
         """
         try:
             if random_phase:
@@ -68,15 +68,18 @@ class Muon:
             raise ValueError("U must be in range {0, 1}")
         if U == 0:  # ln(0) -> inf so set to some small value
             U = 1e-9
-        self.lifetime = -(np.log(U)) / Muon.decay_const
+        self.lifetime = -(np.log(U)) / Muon.DECAY_CONST
 
     def randomise_phase(self):
         """Sets phase to random radian"""
         self.phase = np.random.uniform(0, 2 * np.pi)
 
     def set_larmor(self, field_mag):
-        """Sets larmor to radians per second"""
-        self.larmor = abs(field_mag) * self.gyro_ratio
+        """
+        Sets larmor to radians per second
+        :param float field_mag: Magnitude of field
+        """
+        self.larmor = abs(field_mag) * Muon.GYRO_RATIO
 
     def set_spin_polarisation(self):
         """
@@ -118,7 +121,11 @@ class Muon:
             raise
 
     def set_spin_field_angle(self, field_dir):
-        """Sets angle between external field and spin direction in radians"""
+        """
+        Sets angle between external field and spin direction in radians
+        :param array field_dir: Magnetic field vector
+        :rtype: setter
+        """
         self.spin_field_angle = func.get_angle(self.spin_dir, field_dir)
 
     def set_kubo_toyabe(self, width):
@@ -128,15 +135,40 @@ class Muon:
 
     def feel_dipole(self, dipole):
         """
+        Adds field contribution from dipole
         :param object dipole: Dipole for muon to respond to
-        :return: 
+        :rtype: setter
         """
         try:
             self.field += dipole.get_mag_field(self.location)
         except AttributeError:
             # Catch error if this is first field muon "feels"
             self.field = dipole.get_mag_field(self.location)
-        field_mag = func.get_mag(self.field)
-        field_dir = func.get_unit_vector(self.field)
-        self.apply_field(field_dir, field_mag)
-        # print(f"Muon now feels {dipole}")
+
+    def relax(self):
+        pass
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
+    N = 10_000
+    particles = [Muon() for _ in range(N)]
+    field_x = np.random.normal(8e-8, 1e-8, N)
+    field_y = np.zeros_like(field_x)
+    field_z = np.zeros_like(field_x)
+    fields = list(zip(field_x, field_y, field_z))
+    print(fields[0])
+    polars = np.zeros_like(particles, dtype=float)
+    lifes = np.zeros_like(polars)
+    for i, p in enumerate(particles):
+        p.apply_field(fields[i])
+        polars[i] = p.polarisation
+        lifes[i] = p.lifetime
+
+    print(np.mean(lifes))
+    fig, (ax, ax2) = plt.subplots(2, 1)
+    ax.scatter(lifes, polars)
+    ax.set_xlim(func.get_limits(lifes))
+    ax2.hist(lifes, bins=100)
+    plt.show()
