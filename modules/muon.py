@@ -1,7 +1,6 @@
 import numpy as np
 import modules.functions as func
 
-
 class Muon:
     """
     Makes an object representing a muon decaying at a set location in a magnetic field
@@ -11,8 +10,8 @@ class Muon:
     HALFLIFE = 2.2969811e-6
     GYRO_RATIO = 2 * np.pi * 135.5e6
     DECAY_CONST = np.log(2) / HALFLIFE
-    TIME_RESOLUTION = 500
-    TIME_SCALE = np.linspace(1e-9, 10e-6, TIME_RESOLUTION)
+    TIME_RESOLUTION = 1000
+    TIME_SCALE = np.linspace(1e-9, 100e-6, TIME_RESOLUTION)
 
     def __init__(self, **kwargs):
         """
@@ -147,7 +146,7 @@ class Muon:
             # Catch error if this is first field muon "feels"
             self.field = dipole.get_mag_field(self.location)
 
-    def full_relaxation(self, field):
+    def full_relaxation(self, field, life_limit=True):
         """
         Returns the polarisation of the muon against time
 
@@ -161,55 +160,9 @@ class Muon:
         y = Muon.GYRO_RATIO
         polarisation = np.cos(theta) ** 2 + (np.sin(theta) ** 2) * np.cos(y * H * t)
         # Set polarisation to zero if muon has decayed
-        polarisation = np.where(Muon.TIME_SCALE < self.lifetime, polarisation, np.nan)
+        if life_limit:
+            polarisation = np.where(Muon.TIME_SCALE < self.lifetime, polarisation, np.nan)
         return polarisation
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from matplotlib.lines import Line2D
-
-    np.random.seed(1)
-    N = 3000
-    particles = [Muon() for _ in range(N)]
-    particles[0].lifetime = Muon.TIME_SCALE[-1]
-    field_x = np.random.normal(8e-3, 1e-3, N)
-    field_y = np.zeros_like(field_x)
-    field_z = np.zeros_like(field_x)
-    fields = list(zip(field_x, field_y, field_z))
-
-    # Get each muons polarisation
-    relaxations = np.array([p.full_relaxation(fields[i]) for i, p in enumerate(particles)])
-
-    # Normalise sum
-    overall = np.nansum(relaxations, axis=0) / N
-
-    fig, ax = plt.subplots()
-    for i in range(N):
-        ax.plot(Muon.TIME_SCALE, relaxations[i], alpha=0.5, lw=0.5)
-    ax.plot(Muon.TIME_SCALE, overall, lw=2, c="k")
-    ax.set_xlim(Muon.TIME_SCALE[0], Muon.TIME_SCALE[-1])
-    # Add legend
-    legend_handles = {Line2D([0], [0],
-                             color="g", markerfacecolor="w",
-                             label="Individual muons"),
-                      Line2D([0], [0],
-                             color="k", markerfacecolor="k",
-                             label="Summed relaxation functions")}
-    ax.legend(handles=legend_handles, loc="upper right")
-    ax.ticklabel_format(style="sci", axis="x", scilimits=(-6, -6))
-    ax.s
-    plt.show()
-
-    # polars = np.zeros_like(particles, dtype=float)
-    # lifes = np.zeros_like(polars)
-    #
-    # for i, p in enumerate(particles):
-    #     p.apply_field(fields[i])
-    #     polars[i] = p.polarisation
-    #     lifes[i] = p.lifetime
-    #
-    # fig, (ax, ax2) = plt.subplots(2, 1)
-    # ax.scatter(lifes, polars)
-    # ax.set_xlim(func.get_limits(lifes))
-    # ax2.hist(lifes, bins=100)
-    # plt.show()
+    pass
