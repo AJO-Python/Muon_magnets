@@ -10,7 +10,7 @@ class Muon:
     HALFLIFE = 2.2969811e-6
     GYRO_RATIO = 2 * np.pi * 135.5e6
     DECAY_CONST = np.log(2) / HALFLIFE
-    TIME_RESOLUTION = 1000
+    TIME_RESOLUTION = 2000
     TIME_SCALE = np.linspace(1e-9, 100e-6, TIME_RESOLUTION)
 
     def __init__(self, **kwargs):

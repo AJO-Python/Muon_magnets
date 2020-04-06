@@ -2,9 +2,6 @@ import numpy as np
 from scipy import integrate
 import modules.muon as mu
 
-mpl.rcParams["axes.formatter.limits"] = -2, 2  # Sets xticks to use exponents
-mpl.rcParams["axes.grid"] = True  # Turns grid on
-
 def static_GKT(time, width):
     """
     :param object time: Length of time to calculate

@@ -141,12 +141,12 @@ def save_array(run_name, file_name, **kwargs):
     import errno
     # Check if run folder exists and make it if not
     try:
-        os.makedirs(f"../data/{run_name}")
+        os.makedirs(f"data/{run_name}")
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-    file_path = f"../data/{run_name}/{file_name}.npz"
+    file_path = f"data/{run_name}/{file_name}.npz"
     np.savez(file_path, **kwargs)
     print(f"Saved to {file_path}")
 
@@ -157,7 +157,7 @@ def save_object(filename, obj):
     :param object obj: Object to save
     """
     import pickle
-    file_path = f"../data/{filename}.pickle"
+    file_path = f"data/{filename}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
@@ -172,7 +172,7 @@ def load_object(file_name):
     :return: Object stored in file
     """
     import pickle
-    file_path = f"../data/{file_name}.pickle"
+    file_path = f"data/{file_name}.pickle"
     with open(file_path, 'r') as output:  # Open as read
         return pickle.load(output)
 
@@ -185,7 +185,7 @@ def load_config(file_name):
     :return: Dictionary of config variables
     """
     # Load file as all string
-    load_data = np.loadtxt(f"../config/{file_name}.txt",
+    load_data = np.loadtxt(f"config/{file_name}.txt",
                            delimiter="\n",
                            dtype=str)
     # Unpack into a dictionary and convert to float/bool
@@ -210,18 +210,18 @@ def load_run(run_name, files=[]):
     data = {}
     if files:
         for i, file in enumerate(files):
-            data[file] = np.load(f"./data/{run_name}/{file}.npz", allow_pickle=True)
-            print(f"Loaded {1}.{file}...")
+            data[file] = np.load(f"data/{run_name}/{file}.npz", allow_pickle=True)
+            print(f"Loaded {file}...")
         return data
 
     else:
-        dipole_data = np.load(f"./data/{run_name}/dipoles.npz", allow_pickle=True)
+        dipole_data = np.load(f"data/{run_name}/dipoles.npz", allow_pickle=True)
         print(f"Loaded dipoles")
 
-        field_data = np.load(f"./data/{run_name}/fields.npz")
+        field_data = np.load(f"data/{run_name}/fields.npz")
         print(f"Loaded fields")
 
-        loc_data = np.load(f"./data/{run_name}/locations.npz")
+        loc_data = np.load(f"data/{run_name}/locations.npz")
         print(f"Loaded locations")
 
         return dipole_data, field_data, loc_data

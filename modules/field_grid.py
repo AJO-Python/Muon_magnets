@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import modules.functions as func
+
+from matplotlib.patches import Ellipse
+
 
 def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
     """
@@ -67,12 +70,13 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
 
 if __name__=="__main__":
 
-    do_plot = False
+    do_plot = True
     run_name = "5x5_U_0"
     nx, ny = 50, 50
     buffer = 3e-6
 
-    _dipole_data = func.load_run(run_name, files=["dipoles"])[0]
+    dipole_data = func.load_run(run_name, files=["dipoles"])
+    dipole_data = dipole_data["dipoles"]
     calc_field_grid(run_name,
                     dipole_data["dipoles"],
                     edge_buffer=buffer,
@@ -86,8 +90,7 @@ if __name__=="__main__":
         plot_density = 2
 
         # PLOTTING
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots()
 
         # Set colourscale and plot streamplot
         color = 2 * np.log(np.hypot(field_data["Ex"], field_data["Ey"]))
@@ -120,5 +123,5 @@ if __name__=="__main__":
         plt.grid()
         plt.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
         plt.ticklabel_format(axis="y", style="sci", scilimits=(-6, -6))
-        plt.savefig(f"../images/dipoles/{run_name}.png", bbox_inches="tight")
+        plt.savefig(f"images/dipoles/{run_name}.png", bbox_inches="tight")
         plt.show()
