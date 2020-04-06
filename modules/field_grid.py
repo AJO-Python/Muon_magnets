@@ -36,7 +36,7 @@ def setup_field(max_loc, edge_buffer, nx, ny):
     :rtype: dict
     :return: Dictionary containing coordinates for a field over the dipole array
     """
-    x_max, y_max = max_loc
+    x_max, y_max, _ = max_loc
     # Determine region to calculate field lines/plot over
     field_region = [[0 - edge_buffer, x_max + edge_buffer], [0 - edge_buffer, y_max + edge_buffer]]
     field_locations = {"x_vals": np.linspace(*field_region[0], nx),
@@ -60,9 +60,9 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
         print(f"Calculating row... {i}/{x_len - 1}")
         for j, y in enumerate(y_vals):
             for dipole in dipoles:
-                if dipole.location == (x, y):
+                if dipole.location == (x, y, 1e-6):
                     continue
-                ex, ey = dipole.get_mag_field([x, y])
+                ex, ey, _ = dipole.get_mag_field([x, y, 1e-6])
                 Ex[j][i] += ex
                 Ey[j][i] += ey
     return {"Ex": Ex, "Ey": Ey}
@@ -71,8 +71,8 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
 if __name__=="__main__":
 
     do_plot = True
-    run_name = "5x5_U_0"
-    nx, ny = 50, 50
+    run_name = "5x5_R_1"
+    nx, ny = 100, 100
     buffer = 3e-6
 
     dipole_data = func.load_run(run_name, files=["dipoles"])
@@ -87,7 +87,7 @@ if __name__=="__main__":
         dipole_data, field_data, loc_data = func.load_run(run_name)
         dipole_array = dipole_data["dipoles"]
 
-        plot_density = 2
+        plot_density = 4
 
         # PLOTTING
         fig, ax = plt.subplots()

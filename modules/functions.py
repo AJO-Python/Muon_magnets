@@ -134,7 +134,7 @@ def save_array(run_name, file_name, **kwargs):
 
     :param str run_name: Name of run
     :param str file_name: Name of file
-    :param dict kwargs: arrays to save to file
+    :param dict kwargs: {"data_name": data} arrays to save to file
     :return: Saves arrays to a binary .npy file
     """
     import os

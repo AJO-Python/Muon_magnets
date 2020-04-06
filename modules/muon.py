@@ -26,17 +26,12 @@ class Muon:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    @property
-    def __str__(self):
-        """
-        :rtpe: str
-        :return: list of all attributes and values for self
-        """
-        return "\n".join([": ".join((str(att), str(getattr(self, att)))) for att in vars(self)])
-
-    @property
-    def __repr__(self):
-        return f"Muon at {self.location}"
+    # def __str__(self):
+    #     """
+    #     :rtpe: str
+    #     :return: list of all attributes and values for self
+    #     """
+    #     return "\n".join([": ".join((str(att), str(getattr(self, att)))) for att in vars(self)])
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """

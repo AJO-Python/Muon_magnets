@@ -9,29 +9,48 @@ import modules.functions as func
 from modules.muon import Muon
 from modules.dipole import Dipole
 from modules.model_equations import static_GKT
+from modules.multi_process import MP_fields
+import time
 
-np.random.seed(1)
+
+############################################
+
+def calc_single_particle(input):
+    particle, dipole_array = input
+    for d in dipole_array:
+        particle.feel_dipole(d)
+    return particle
+
+
+np.random.seed(3)
 
 N = 10000
-run_name = "5x5_U_3"
-particles = [Muon(location=np.random.normal(loc=(6e-6, 6e-6, 1e-6), scale=(1e-6, 1e-6, 0), size=3)) for _ in range(N)]
-# Setting first muon to full lifetime for debugging
-# particles[0].lifetime = Muon.TIME_SCALE[-1]
+run_name = "10x10_R_0"
+calculate = True
+locations = np.random.normal(loc=(15e-6, 15e-6, 15e-6), scale=(3e-6, 3e-6, 0), size=(N, 3))
+particles = np.array([Muon(location=locations[i]) for i in range(N)])
 
 dipole_data = func.load_run(run_name, files=["dipoles"])
 dipole_array = dipole_data["dipoles"]["dipoles"]
 
 fields = np.zeros((N, 3), dtype=float)
-for i, p in enumerate(particles):
-    for d in dipole_array:
-        p.feel_dipole(d)
-    fields[i] = p.field
+
+# Only perform calculation when necessary
+if calculate:
+    start = time.time()
+    MP_fields(run_name, particles, dipole_array)
+    end = time.time()
+    print(f"Time taken: {end - start}")
+
+fields = func.load_run(run_name, files=["muon_fields"])
+fields = np.array(fields["muon_fields"]["muon_fields"])
+print(np.shape(fields))
 
 magnitudes = np.array([func.get_mag(f) for f in fields])
 field_dict = {"total": magnitudes, "x": fields[:, 0], "y": fields[:, 1], "z": fields[:, 2]}
 
 # Get each muons polarisation
-relaxations = np.array([p.full_relaxation(p.field, life_limit=False) for i, p in enumerate(particles)])
+relaxations = np.array([p.full_relaxation(fields[i], life_limit=False) for i, p in enumerate(particles)])
 
 # Normalise sum
 overall = np.nansum(relaxations, axis=0) / N
