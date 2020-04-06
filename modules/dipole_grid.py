@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
 from modules.dipole import Dipole
+from modules.island import Island
 import modules.functions as func
 
 
@@ -31,7 +32,7 @@ def make_dipole_grid(config_file="", **kwargs):
     run_name = check_run_name(f"{width}x{height}_{r_angle}")
 
     # Create coordinates for grid
-    coords = [(x, y) for x in range(width) for y in range(height)]
+    coords = [(x, y, 0) for x in range(width) for y in range(height)]
     dipole_count = len(coords)
 
     # Create array of dipoles (one for each coordinate)
@@ -40,9 +41,9 @@ def make_dipole_grid(config_file="", **kwargs):
     # Fill array with dipoles with $spacing between each point
     spacing = data["spacing"]
     for i, coord in enumerate(coords):
-        dipole_array[i] = Dipole(orientation=angles[i],
+        dipole_array[i] = Island(orientation=angles[i],
                                  coord=coord,
-                                 location=(coord[0] * spacing, coord[1] * spacing),
+                                 location=(coord[0] * spacing, coord[1] * spacing, 0),
                                  strength=data["strength"])
 
     # Can return the array for testing the function
@@ -67,7 +68,7 @@ def check_run_name(run_name):
     run_name = run_name + "_" + str(dir_count)
     while not made_dir:
         try:
-            os.makedirs(f"../data/{run_name}")
+            os.makedirs(f"data/{run_name}")
             made_dir = True
         except OSError:
             dir_count += 1
@@ -97,4 +98,4 @@ def set_angles(dipoles, data, random):
 if __name__ == "__main__":
     print("Loading config file 'dipole_array_config.txt'...")
     run_name = make_dipole_grid()
-    print(f"Dipoles stored in: ../data/{run_name}")
+    print(f"Dipoles stored in: data/{run_name}")

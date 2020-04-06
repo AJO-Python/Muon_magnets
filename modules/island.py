@@ -126,13 +126,16 @@ if __name__ == "__main__":
         colors[temp_island.contains_points(points)] = "r"
         islands[i] = temp_island
 
+
+    def show_on_plot(fig, ax, islands):
+        pass
+
+
     # PLOTTING
     fig, ax = plt.subplots()
 
     # Add moment arrows
     for isle in islands:
-        print("----")
-        print(isle.ID)
         ax.add_patch(isle.get_moment_arrow())
         ax.add_patch(isle.get_outline())
 
