@@ -10,7 +10,7 @@ def calc_fields(*args):
     for i, p in enumerate(particle_chunk):
         for d in dipoles:
             p.feel_dipole(d)
-            chunk_fields.append(p.field)
+        chunk_fields.append(p.field)
     return chunk_fields
 
 
@@ -25,7 +25,7 @@ def MP_fields(folder_name, particles, dipoles,
     """
 
     def start():
-        chunks = np.array_split(particles, int(len(particles) / 16))
+        chunks = np.array_split(particles, 16)
 
         print("Starting pool...")
         p = Pool(processes=4)
@@ -56,6 +56,6 @@ def MP_fields(folder_name, particles, dipoles,
     print("Booting up...")
     result_list = start()
     print("Saving data to file...")
-    results = np.concatenate(result_list, axis=0)
-    func.save_array(folder_name, "muon_fields", muon_fields=results)
+    # results = np.concatenate(result_list, axis=0)
+    # func.save_array(folder_name, "muon_fields", muon_fields=results)
     print("Finished.")
