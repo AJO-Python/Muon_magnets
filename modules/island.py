@@ -3,13 +3,14 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.path as mpltPath
 from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Arrow
 from modules.dipole import Dipole
 import modules.functions as func
 
 
 class Island(Dipole):
     counter = 0
+
     def __init__(self,
                  orientation=0,
                  coord=[0, 0, 0],
@@ -78,13 +79,13 @@ class Island(Dipole):
         self.current = np.array([self.area * self.moment])
 
     def get_moment_arrow(self):
-        arrow = ax.arrow(x=self.location[0], y=self.location[1],
-                         dx=self.moment[0] * 10, dy=self.moment[1] * 10,
-                         length_includes_head=True,
-                         width=func.get_mag(self.size) / 16,
-                         head_starts_at_zero=False,
-                         edgecolor=None
-                         )
+        arrow = Arrow(x=self.location[0], y=self.location[1],
+                      # dx=self.moment[0] * 10, dy=self.moment[1] * 10,
+                      dx=self.size[0] * np.cos(self.orientation_r) / 2,
+                      dy=self.size[1] * np.sin(self.orientation_r) / 2,
+                      width=func.get_mag(self.size) / 2,
+                      edgecolor=None
+                      )
         return arrow
 
     def get_outline(self, line_width=0.1):
@@ -99,11 +100,13 @@ class Island(Dipole):
                               width=self.size[0],
                               height=self.size[1],
                               angle=self.orientation_d,
-                              fill=False,
+                              fill=True,
+                              alpha=0.4,
                               edgecolor="k",
                               lw=0.1)
         rectangle.set_xy(self.corners[3])
         return rectangle
+
 
 if __name__ == "__main__":
 
@@ -128,16 +131,16 @@ if __name__ == "__main__":
 
 
     def show_on_plot(fig, ax, islands):
-        pass
+
+        for isle in islands:
+            ax.add_patch(isle.get_moment_arrow())
+            ax.add_patch(isle.get_outline())
+        return fig, ax
 
 
     # PLOTTING
     fig, ax = plt.subplots()
-
-    # Add moment arrows
-    for isle in islands:
-        ax.add_patch(isle.get_moment_arrow())
-        ax.add_patch(isle.get_outline())
+    fig, ax = show_on_plot(fig, ax, islands)
 
     # Add muons
     ax.scatter(points[:, 0], points[:, 1],
