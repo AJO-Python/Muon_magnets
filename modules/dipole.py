@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import modules.functions as func
-import modules.grid as grid
 
 class Dipole():
     """

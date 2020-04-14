@@ -20,7 +20,7 @@ def check_calculations():
                 spin_dir=[-1, 0],
                 lifetime=1)
 
-    field_calc = island.get_mag_field(muon.location)
+    field_calc = island.get_mag_field(muon.loc)
     hand_calc = 800e3
     print(f"""By hand calculation for field at (100e-6, 0)m from point dipole at (0, 0)m with\n
           strength = 1e-8 T\n
@@ -192,7 +192,7 @@ angles = np.random.uniform(0, 6.28, 10)
 ensemble = [Dipole(angle, [0, 0, 0], 3) for i, angle in enumerate(angles)]
 
 if __name__ == "__main__":
-    # check_calculations()
+    check_calculations()
     check_muon_dipoles()
-    # check_precession()
-    # check_1d_dipole(norm=False)
+    check_precession()
+    check_1d_dipole(norm=False)

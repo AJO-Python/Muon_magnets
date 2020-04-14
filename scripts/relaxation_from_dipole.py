@@ -14,12 +14,23 @@ import time
 
 
 ############################################
-
 def calc_single_particle(input):
     particle, dipole_array = input
     for d in dipole_array:
         particle.feel_dipole(d)
     return particle
+
+
+def calc_fields(*args):
+    particle_chunk, dipoles = args
+    chunk_fields = []
+    for i, p in enumerate(particle_chunk):
+        for d in dipoles:
+            p.feel_dipole(d)
+        chunk_fields.append(p.field)
+        if i % int((len(particle_chunk) / 10)) == 0:
+            print(f"{i}/{len(particle_chunk)} done")
+    return chunk_fields
 
 
 np.random.seed(3)
@@ -35,17 +46,9 @@ dipole_array = dipole_data["dipoles"]["dipoles"]
 
 fields = np.zeros((N, 3), dtype=float)
 
+fig, ax = plt.subplots()
+fig, ax =
 
-def calc_fields(*args):
-    particle_chunk, dipoles = args
-    chunk_fields = []
-    for i, p in enumerate(particle_chunk):
-        for d in dipoles:
-            p.feel_dipole(d)
-        chunk_fields.append(p.field)
-        if i % int((len(particle_chunk) / 10)) == 0:
-            print(f"{i}/{len(particle_chunk)} done")
-    return chunk_fields
 # Only perform calculation when necessary
 if calculate:
     print("Starting multiprocessing...")

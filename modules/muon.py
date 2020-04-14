@@ -22,16 +22,17 @@ class Muon:
         self.set_lifetime(np.random.rand(1))
         self.spin_dir = np.array([0, 0, -1])
         self.phase = 0
+        self.loc = np.array([0, 0, 0])
         # kwargs last so all previous properties can be overwritten if needed
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    # def __str__(self):
-    #     """
-    #     :rtpe: str
-    #     :return: list of all attributes and values for self
-    #     """
-    #     return "\n".join([": ".join((str(att), str(getattr(self, att)))) for att in vars(self)])
+    def __str__(self):
+        """
+        :rtpe: str
+        :return: list of all attributes and values for self
+        """
+        return "\n".join([": ".join((str(att), str(getattr(self, att)))) for att in vars(self)])
 
     def apply_field(self, field_dir=[1, 0, 0], field_strength=1e-3, random_phase=False):
         """
@@ -136,10 +137,10 @@ class Muon:
         :rtype: setter
         """
         try:
-            self.field += dipole.get_mag_field(self.location)
+            self.field += dipole.get_mag_field(self.loc)
         except AttributeError:
             # Catch error if this is first field muon "feels"
-            self.field = dipole.get_mag_field(self.location)
+            self.field = dipole.get_mag_field(self.loc)
 
     def full_relaxation(self, field, life_limit=True):
         """

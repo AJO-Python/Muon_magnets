@@ -20,13 +20,13 @@ def test_dipole():
     assert hasattr(dipole, "orientation_r")
     assert hasattr(dipole, "moment")
     
-    assert type(dipole.location) == np.ndarray
+    assert type(dipole.loc) == np.ndarray
     assert type(dipole.moment) == np.ndarray
 
     # Check orientation and angle conversion correct
     assert dipole.orientation_d == 45
     assert dipole.orientation_r == np.deg2rad(dipole.orientation_d)
-    assert len(dipole.moment) == len(dipole.location)
+    assert len(dipole.moment) == len(dipole.loc)
 
     # Check class variables
     assert Dipole.count == 1

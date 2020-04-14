@@ -86,7 +86,7 @@ def set_muon_field(dipoles, muons):
                 # muon.field += dipole.get_internal_field(muon.location)
                 muon.in_island = True
             else:
-                muon.field += dipole.get_mag_field(muon.location)
+                muon.field += dipole.get_mag_field(muon.loc)
 
 
 
@@ -106,7 +106,7 @@ if __name__=="__main__":
     # Load dipole grid
     dipole_data = load_run(run_name, files=["dipoles"])
     dipole_array = dipole_data["dipoles"]["dipoles"]
-    max_loc = dipole_array[-1].location
+    max_loc = dipole_array[-1].loc
 
     # Spread muons over dipoles and calculate field values
     # spread_muons(run_name=run_name, N=N, dipole_array=dipole_array, max_loc=max_loc)

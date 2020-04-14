@@ -11,12 +11,12 @@ data = load_run(run_name, files=["dipoles", "muons"])
 dipoles = data["dipoles"]["dipoles"]
 muons = data["muons"]["muons"]
 
-muon_xs = [muon.location[0] for muon in muons if not hasattr(muon, "in_island")]
-muon_ys = [muon.location[1] for muon in muons if not hasattr(muon, "in_island")]
+muon_xs = [muon.loc[0] for muon in muons if not hasattr(muon, "in_island")]
+muon_ys = [muon.loc[1] for muon in muons if not hasattr(muon, "in_island")]
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ells = [Ellipse(xy=dipole.location,
+ells = [Ellipse(xy=dipole.loc,
                 width=700e-9, height=1.6e-6,
                 angle=dipole.orientation_d + 90) for dipole in dipoles]
 for ellipse in ells:

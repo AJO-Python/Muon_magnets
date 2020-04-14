@@ -17,7 +17,7 @@ def calc_field_grid(run_name, dipole_array, edge_buffer, nx, ny):
     :return: Saves field values and locations to run folder
     """
     # Setup field grid and calculate values
-    field_locations = setup_field(max_loc=dipole_array[-1].location,
+    field_locations = setup_field(max_loc=dipole_array[-1].loc,
                                   edge_buffer=edge_buffer,
                                   nx=nx, ny=ny)
     field_values = fill_field_values_2d(dipole_array, **field_locations)
@@ -60,7 +60,7 @@ def fill_field_values_2d(dipoles, x_vals=[], y_vals=[]):
         print(f"Calculating row... {i}/{x_len - 1}")
         for j, y in enumerate(y_vals):
             for dipole in dipoles:
-                if dipole.location == (x, y, 1e-6):
+                if dipole.loc == (x, y, 1e-6):
                     continue
                 ex, ey, _ = dipole.get_mag_field([x, y, 1e-6])
                 Ex[j][i] += ex
@@ -107,7 +107,7 @@ if __name__=="__main__":
                       arrowsize=1.5)
 
         # Add ellipses to mark dipoles
-        ells = [Ellipse(xy=dipole.location,
+        ells = [Ellipse(xy=dipole.loc,
                         width=700e-9, height=1.6e-6,
                         angle=dipole.orientation_d + 90) for dipole in dipole_array]
         for ellipse in ells:

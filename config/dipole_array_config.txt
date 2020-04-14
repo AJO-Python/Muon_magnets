@@ -1,8 +1,12 @@
 # $variable_name = value
-# MUST HAVE: width, height, spacing, angle, random_orientation
-width = 10                   # -> int
-height = 10                  # -> int
-spacing = 3e-6              # -> float
-strength = 8e-16             # -> float
-angle = 0                   # -> float
-random_orientation = True  # -> bool
+# MUST HAVE: width -> float, height -> float, spacing -> float,
+# angle -> degrees, random_orientation -> bool, island_size -> tuple(float, float)
+width=45e-6
+height=45e-6
+xspacing=3e-6
+yspacing=3e-6
+xsize=1.6e-6
+ysize=700e-9
+strength=8e-16
+angle=90
+random_orientation=True

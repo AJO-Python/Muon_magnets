@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 # =============================================================================
 # VECTOR FUNCTIONS
@@ -64,7 +64,6 @@ def get_limits(arr):
 
 
 def make_fancy_plot(fig, ax):
-    import matplotlib.pyplot as plt
     from matplotlib.ticker import ScalarFormatter, AutoMinorLocator
     plt.style.use("./config/fancy_plots.mplstyle")
     ax.yaxis.set_major_formatter(ScalarFormatter())
@@ -225,3 +224,4 @@ def load_run(run_name, files=[]):
         print(f"Loaded locations")
 
         return dipole_data, field_data, loc_data
+
