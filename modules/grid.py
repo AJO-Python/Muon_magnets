@@ -1,5 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
 import modules.dipole as dip
+import modules.functions as func
+from modules.island import Island
+from modules.ensemble import Ensemble
 
 
 class Grid():
@@ -7,133 +12,80 @@ class Grid():
     Creates a width x height grid that can store objects at all points.
     """
 
-    def __init__(self, width, height):
-        """
-        :param int width: Number of columns
-        :param int height: Number of rows
-        :rtype: object
-        """
-        self.width = int(width)
-        self.height = int(height)
-        self.add_points(width, height)
-        self.size = (self.width, self.height)
+    def __init__(self, config_file="dipole_array_config"):
+        parameters = func.load_config(config_file)
+        for key, value in parameters.items():
+            self.__setattr__(key, value)
 
-    def __repr__(self):
-        ret_str = ""
-        comma = False
-        for x in range(self.width, -1, -1):
-            for y in range(0, self.height + 1, 1):
-                # Exludes comma for first entry in newline
-                if not comma:
-                    ret_str = "".join([ret_str, f"({x},{y})"])
-                    comma = True
-                else:
-                    ret_str = ", ".join([ret_str, f"({x},{y})"])
-            ret_str += "\n"
-            comma = False
-        return ret_str
+        # Setup islands
+        self.set_size()
+        self.set_count()
+        self.set_locations()
+        self.create_islands()
 
-    def add_points(self, x_points, y_points):
-        """
-        :param int x_points: Number of x points
-        :param int y_points: Number of y points
-        :return: sets self.points to 2-d array of zeros in shape (x_points, y_points)
-        """
-        self.points = np.zeros([x_points, y_points], dtype=object)
-        print(f"shape of grid: {np.shape(self.points)}")
+    def create_islands(self):
+        self.islands = np.zeros(self.count, dtype=object)
+        if self.random_orientation:
+            self.angles = np.random.random(size=self.count) * 360
+        else:
+            self.angles = np.full(self.count, self.angle)
 
-    def set_point(self, coord, value):
-        """
-        :rtype: object
-        :param tuple coord: (x, y)
-        :param object value: Value to store at point
-        :return: sets self.points at coord to value
-        """
-        x, y = coord
-        y = self.convert_y(y)
-        self.points[x][y] = value
+        for i in range(self.count):
+            temp_island = Island(orientation=self.angles[i], strength=self.strength,
+                                 size=self.island_size, location=self.locations[i])
+            self.islands[i] = temp_island
 
-    def add_to_point(self, coord, new_value):
-        """
-        :param tuple coord: (x, y)
-        :param object new_value: Value to add to current point
-        :return: Sets self.points += new_value
-        """
-        # Makes addition to preexisting cell
-        cur_value = self.get_point(coord)
-        self.set_point(coord, cur_value + new_value)
+    def set_locations(self):
+        self.locations_x = np.linspace(-self.width / 2, self.width / 2, self.xnum, endpoint=True)
+        self.locations_y = np.linspace(-self.height / 2, self.height / 2, self.ynum, endpoint=True)
+        self.locations = []
+        for x in self.locations_x:
+            for y in self.locations_y:
+                self.locations.append((x, y))
+        self.locations = np.array(self.locations)
 
-    def convert_y(self, y):
-        """
-        :param int y: y coordinate
-        :return: Converts from top left indexing to bottom left indexing
-        """
-        return int(self.height - 1 - y)
+    def set_count(self):
+        self.xnum = int(self.width / self.xspacing)
+        self.ynum = int(self.height / self.yspacing)
+        self.count = self.xnum * self.ynum
 
-    def get_point(self, coord):
-        """
-        :param tuple coord: (x, y)
-        :rtype: object
-        :return: Gets the object stored at grid point (x, y)
-        """
-        x, y = coord
-        y = self.convert_y(y)
-        return self.points[x][y]
+    def show_on_plot(self, fig=None, ax=None):
+        if not fig and not ax:
+            fig, ax = plt.subplots()
 
-    def all_coords(self):
-        """
-        :return: Generator for all (x, y) coords in Grid object
-        """
-        for x in range(self.width):
-            for y in range(self.height):
-                yield (x, y)
+        for isle in self.islands:
+            ax.add_patch(isle.get_moment_arrow())
+            ax.add_patch(isle.get_outline())
+        ax.set_xlim(func.get_limits(self.locations_x))
+        ax.set_ylim(func.get_limits(self.locations_y))
+        ax.set_aspect("equal")
+        return fig, ax
 
-    def all_values(self):
-        """
-        :return: Generator for all values stored in Grid
-        """
-        for coord in self.all_coords():
-            yield self.get_point(coord)
+    def set_size(self):
+        self.island_size = (self.xsize, self.ysize)
 
-    def fill_with_dipoles(self, spacing=3e-6, angle=0,
-                          random_angle=False):
-        """
-        :param float spacing: Centre to centre distance of dipoles
-        :param float angle: Orientation of dipole in degrees
-        :param bool random_angle: If True provides random angle for each dipole
-        :param bool full: If True returns last Dipole object calculated
-        :return: Fills field with dipoles
-        """
-        self.real_size = [val * spacing for val in self.size]
-        for coord in self.all_coords():
-            pos = spacing
-            if random_angle:
-                angle = np.random.uniform(0, 360)
-            self.set_point(coord,
-                           dip.Dipole(orientation=angle,
-                                      location=[coord[0] * pos, coord[1] * pos],
-                                      strength=1e-4))
 
-    def fill_field_values(self, x_locs, y_locs):
-        """
-        'Self' must be grid object filled with Dipole objects to use this method
-        :param array x_locs: Array of x-locations
-        :param array y_locs: Array of y-locations
-        :rtype: [array, array]
-        :return: Returns x and y field values for all points
-        """
-        x_len = len(x_locs)
-        y_len = len(y_locs)
-        Ex = np.zeros([x_len, y_len])
-        Ey = np.zeros([x_len, y_len])
-        for i, x in enumerate(x_locs):
-            print(f"Calculating row... {i}/{x_len - 1}")
-            for j, y in enumerate(y_locs):
-                for dipole in self.all_values():
-                    if np.array_equal(dipole.location, np.array([x, y])):
-                        print(f"Skipping {x},{y} as it overlaps a magnet")
-                        continue
-                    ex, ey = dipole.get_mag_field([x, y])
-                    Ex[i][j] += ex
-                    Ey[i][j] += ey
-        return Ex, Ey
+if __name__ == "__main__":
+    num_muons = 1_0000
+
+    print("Making grid...")
+    island_grid = Grid()
+    print("Finished grid")
+
+    print("Making ensemble...")
+    muon_ensemble = Ensemble(num_muons)
+    print("Finished ensemble")
+
+    muon_ensemble.apply_quadtree(island_grid)
+
+    fig, ax = plt.subplots()
+
+    print("Plotting grid...")
+    fig, ax = island_grid.show_on_plot(fig, ax)
+    print("Finished plotting grid")
+
+    print("Plotting ensemble...")
+    fig, ax = muon_ensemble.show_on_plot(fig, ax)
+    print("Finished plotting ensemble...")
+    ax.ticklabel_format(style="sci", axis="both", scilimits=(-6, -6))
+    plt.show()
