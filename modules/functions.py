@@ -150,29 +150,31 @@ def save_array(run_name, file_name, **kwargs):
     print(f"Saved to {file_path}")
 
 
-def save_object(filename, obj):
+def save_object(run_name, file_name, obj):
     """
     :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
     :param object obj: Object to save
     """
     import pickle
-    file_path = f"data/{filename}.pickle"
+    file_path = f"data/{run_name}/{file_name}.pickle"
     with open(file_path, 'wb') as output:  # Overwrites any existing file.
+        print(f"Saving pickle to {file_path}")
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 
 # =============================================================================
 # DATA LOAD
 # =============================================================================
-def load_object(file_name):
+def load_object(run_name, file_name):
     """
     :param str filename: Will load from "Muon_magnets/data/{filename}.pickle"
     :rtype: object
     :return: Object stored in file
     """
     import pickle
-    file_path = f"data/{file_name}.pickle"
-    with open(file_path, 'r') as output:  # Open as read
+    file_path = f"data/{run_name}/{file_name}.pickle"
+    with open(file_path, 'rb') as output:  # Open as read
+        print(f"Loading pickle from {file_path}")
         return pickle.load(output)
 
 
