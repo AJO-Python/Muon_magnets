@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
 
 import modules.functions as func
-import modules.grid as grid
+from modules.grid import Grid
+from modules.ensemble import Ensemble
+from modules.
 
 #########################################
 print("Loading config file 'dipole_array_config.txt'...")
