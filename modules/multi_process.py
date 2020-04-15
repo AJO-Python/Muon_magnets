@@ -5,6 +5,11 @@ import time
 
 
 def calc_fields(*args):
+    """
+
+    :param tuple args: array of particles and array of dipoles
+    :return:
+    """
     particle_chunk, dipoles = args
     chunk_fields = []
     for i, p in enumerate(particle_chunk):
@@ -56,6 +61,6 @@ def MP_fields(folder_name, particles, dipoles,
     print("Booting up...")
     result_list = start()
     print("Saving data to file...")
-    # results = np.concatenate(result_list, axis=0)
-    # func.save_array(folder_name, "muon_fields", muon_fields=results)
+    results = np.concatenate(result_list, axis=0)
+    func.save_array(folder_name, "muon_fields", muon_fields=results)
     print("Finished.")

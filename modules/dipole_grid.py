@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
 
 from modules.dipole import Dipole
 from modules.island import Island
