@@ -52,7 +52,7 @@ fig, ax =
 if calculate:
     print("Starting multiprocessing...")
     start = time.time()
-    MP_fields(run_name, particles, dipole_array)
+    MP_fields(RUN_NAME, particles, dipole_array)
     end = time.time()
     print(f"Time taken: {end - start}")
 

@@ -38,7 +38,9 @@ class Grid():
         self.set_count()
         self.set_locations()
         self.set_angles()
-        self.set_run_name()
+        if not run_name:
+            self.set_run_name()
+
         print("Creating islands...")
         self.create_islands()
         print("Saving islands...")
@@ -94,10 +96,6 @@ class Grid():
         dir_count = 0
         angle_key = "R" if self.random_orientation else "U"
 
-        if self.run_name:
-            print("Using given run_name")
-            return
-
         run_name = f"{self.xnum}X{self.ynum}_{angle_key}_{dir_count}"
 
         while not made_dir:
@@ -134,15 +132,15 @@ class Grid():
 
 if __name__ == "__main__":
     num_muons = 1_000
-    run_name = "15X15_R_0"
-    # run_name = ""
+    #run_name = "15X15_R_0"
+    run_name = ""
     print("Making grid...")
-    # island_grid = Grid(run_name=run_name)
-    island_grid = Grid(run_name=run_name, load_only=True)
+    island_grid = Grid(run_name=run_name)
+    #island_grid = Grid(run_name=run_name, load_only=True)
     print("Finished grid")
 
     print("Making ensemble...")
-    muon_ensemble = Ensemble(num_muons)
+    muon_ensemble = Ensemble(num_muons, run_name=island_grid.run_name)
     print("Finished ensemble")
 
     fig, ax = plt.subplots()

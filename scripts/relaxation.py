@@ -27,7 +27,7 @@ magnitudes = np.array([func.get_mag(f) for f in fields])
 field_dict = {"total": magnitudes, "x": field_x, "y": field_y, "z": field_z}
 
 # Get each muons polarisation
-relaxations = np.array([p.full_relaxation(fields[i], life_limit=False) for i, p in enumerate(particles)])
+relaxations = np.array([p.full_relaxation(fields[i], decay=False) for i, p in enumerate(particles)])
 # Normalise sum
 overall = np.nansum(relaxations, axis=0) / N
 

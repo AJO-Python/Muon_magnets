@@ -142,7 +142,7 @@ class Muon:
             # Catch error if this is first field muon "feels"
             self.field = dipole.get_mag_field(self.loc)
 
-    def full_relaxation(self, field, life_limit=True):
+    def full_relaxation(self, field, decay=True):
         """
         Returns the polarisation of the muon against time
 
@@ -156,7 +156,7 @@ class Muon:
         y = Muon.GYRO_RATIO
         polarisation = np.cos(theta) ** 2 + (np.sin(theta) ** 2) * np.cos(y * H * t)
         # Set polarisation to zero if muon has decayed
-        if life_limit:
+        if decay:
             polarisation = np.where(Muon.TIME_SCALE < self.lifetime, polarisation, np.nan)
         return polarisation
 

@@ -63,4 +63,5 @@ def MP_fields(folder_name, particles, dipoles,
     print("Saving data to file...")
     results = np.concatenate(result_list, axis=0)
     func.save_array(folder_name, "muon_fields", muon_fields=results)
-    print("Finished.")
+    print("Finished multiprocessing")
+    print("========")

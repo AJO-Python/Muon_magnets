@@ -7,7 +7,7 @@ from modules.muon import Muon
 
 class Ensemble():
 
-    def __init__(self, N, guass_width=10e-6, run_name="", load_only=False):
+    def __init__(self, N=10_000, guass_width=10e-6, run_name="", load_only=False):
 
         self.run_name = run_name
 
@@ -20,9 +20,9 @@ class Ensemble():
         self.muons = np.array([Muon(loc=self.locations[i]) for i in range(self.N)])
         self.save_ensemble()
 
-    def create_locations(self):
+    def create_locations(self, z_dist=100e-6):
         locations = np.random.normal(loc=0, scale=self.width, size=(self.N, 2))
-        self.locations = np.insert(locations, 2, 0, axis=1)
+        self.locations = np.insert(locations, 2, z_dist, axis=1)
 
     def filter_in_dipoles(self, grid):
         pass
@@ -33,6 +33,9 @@ class Ensemble():
     def loader(self, run_name):
         params = func.load_object(run_name, "ensemble_obj")
         self.__dict__.update(params)
+
+    def set_relaxations(self, fields):
+        self.relaxations = np.array([p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
 
     def show_on_plot(self, fig=None, ax=None):
         if not fig and not ax:

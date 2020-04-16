@@ -227,3 +227,17 @@ def load_run(run_name, files=[]):
 
         return dipole_data, field_data, loc_data
 
+
+def load_fields(run_name):
+    """
+    Loads field experiences by each muon from multiprocessing calculation
+    :param str run_name: run folder
+    :rtype: array, dict
+    :return: Array of fields and Dictionary contating mag, x, y, z fields for each muon
+    """
+    fields = load_run(run_name, files=["muon_fields"])
+    fields = np.array(fields["muon_fields"]["muon_fields"])
+
+    magnitudes = np.array([get_mag(f) for f in fields])
+    field_dict = {"total": magnitudes, "x": fields[:, 0], "y": fields[:, 1], "z": fields[:, 2]}
+    return fields, field_dict
