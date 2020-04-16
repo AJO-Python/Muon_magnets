@@ -91,6 +91,10 @@ class Grid():
     def set_size(self):
         self.island_size = (self.xsize, self.ysize)
 
+    def set_generic(self, name, value):
+        for isle in self.islands:
+            setattr(isle, name, value)
+
     def set_run_name(self):
         made_dir = False
         dir_count = 0

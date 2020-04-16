@@ -33,7 +33,7 @@ def MP_fields(folder_name, particles, dipoles,
         chunks = np.array_split(particles, 16)
 
         print("Starting pool...")
-        p = Pool(processes=4)
+        p = Pool(processes=8)
         print("Dispatching tasks...")
         workers = []
         for i, chunk in enumerate(chunks):

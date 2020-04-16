@@ -88,14 +88,16 @@ class Island(Dipole):
                       )
         return arrow
 
-    def get_outline(self, line_width=0.1):
+    def get_outline(self):
         """
         Creates a Rectangle patch to outline the Island
         :param float line_width: Width of outline
-        :param str ouline_color: Color of outline (Must be color from matplotlib)
         :rtype: object
         :return: Rectangle patch
         """
+        if not hasattr(self, "line_width"):
+            self.line_width = 0.1
+
         rectangle = Rectangle(xy=(0, 0),
                               width=self.size[0],
                               height=self.size[1],
@@ -103,7 +105,7 @@ class Island(Dipole):
                               fill=True,
                               alpha=0.4,
                               edgecolor="k",
-                              lw=0.1)
+                              lw=self.line_width)
         rectangle.set_xy(self.corners[3])
         return rectangle
 
