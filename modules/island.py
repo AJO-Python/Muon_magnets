@@ -72,7 +72,6 @@ class Island(Dipole):
     def contains_points(self, points):
         inside_indices = self.path.contains_points(points)
         self.inside_muons = sum(inside_indices)
-        print(self.inside_muons)
         return inside_indices
 
     def set_current(self):

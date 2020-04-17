@@ -42,6 +42,18 @@ class Ensemble():
                                  size=(self.N))
         self.loc = np.stack([loc_x, loc_y, loc_z], axis=1)
 
+    @property
+    def xloc(self):
+        return self.loc[:, 0]
+
+    @property
+    def yloc(self):
+        return self.loc[:, 1]
+
+    @property
+    def zloc(self):
+        return self.loc[:, 2]
+
     def filter_in_dipoles(self, grid):
         pass
 

@@ -8,6 +8,7 @@ from modules.island import Island
 from modules.ensemble import Ensemble
 
 
+# noinspection PyAttributeOutsideInit
 class Grid():
     """
     Creates a width x height grid that can store objects at all points.
@@ -59,7 +60,7 @@ class Grid():
                                  size=self.island_size, location=self.locations[i])
             self.islands[i] = temp_island
 
-    def set_locations(self, z_dist=0):
+    def set_locations(self):
         """
         Creates array of 3d locations to assign to Islands
         :param float z_dist: Z location of dipole layer
@@ -68,11 +69,13 @@ class Grid():
                                        self.xnum, endpoint=True)
         self.locations_y = np.linspace(-self.height / 2, self.height / 2,
                                        self.ynum, endpoint=True)
-        self.locations = []
-        for x in self.locations_x:
-            for y in self.locations_y:
-                self.locations.append((x, y, z_dist))
-        self.locations = np.array(self.locations)
+        self.locations_z = np.zeros_like(self.locations_x)
+        self.locations = np.array([[(x, y, 0)
+                                    for x in self.locations_x]
+                                   for y in self.locations_y])
+        # Flattens array of arrays to get list of all coords
+        self.locations = self.locations.reshape(-1, self.locations.shape[-1])
+        # self.locations = np.stack([self.locations_x, self.locations_y, self.locations_z], axis=1)
 
     def set_count(self):
         """

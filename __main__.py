@@ -22,9 +22,8 @@ if LOAD_OBJECTS:  # Load from file
 
 else:  # Calculate and save grid and ensemble
     NUM_MUONS = 20000
-    Z_DISTANCE = 400e-6
     SPREAD_VALUES = {"x_width": 10e-6, "y_width": 10e-6, "z_width": 10e-6,
-                     "x_mean": 0, "y_mean": 0, "z_mean": 400e-6}
+                     "x_mean": 0, "y_mean": 0, "z_mean": 100e-6}
     island_grid = Grid()
     RUN_NAME = island_grid.run_name
     particles = Ensemble(N=NUM_MUONS, spread_values=SPREAD_VALUES, run_name=RUN_NAME)
