@@ -124,6 +124,54 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
     return chunks
 
 
+def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
+    from scipy.optimize import curve_fit
+    from modules.model_equations import static_GKT
+    from modules.muon import Muon
+
+    overall = np.nansum(particles.relaxations, axis=0) / particles.N
+
+    # CURVE FIT
+    popt, pcov = curve_fit(static_GKT, Muon.TIME_SCALE, overall, p0=1e-4)
+
+    # Setup subplots
+    ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
+    ax1 = plt.subplot2grid((2, 3), (0, 2))
+    ax2 = plt.subplot2grid((2, 3), (1, 0))
+    ax3 = plt.subplot2grid((2, 3), (1, 1))
+    ax4 = plt.subplot2grid((2, 3), (1, 2))
+
+    field_axes = (ax1, ax2, ax3, ax4)
+    # Plot individual lines if N is small
+    if len(particles.relaxations) < 100:
+        for i in range(N):
+            ax0.plot(Muon.TIME_SCALE, particles.relaxations[i], alpha=0.5, lw=0.5)
+
+    # Plot overall relaxation
+    ax0.plot(Muon.TIME_SCALE, overall, lw=2, c="k", alpha=0.7, label="Model")
+    ax0.plot(Muon.TIME_SCALE, static_GKT(Muon.TIME_SCALE, *popt), c="r", label="Curve fit")
+
+    ax0.legend(loc="upper right")
+    ax0.set_xlim(0, Muon.TIME_SCALE[-1])
+    ax0.set_xlim(0, 20e-6)
+    ax0.grid()
+    ax0.set_title("Relaxation function from dipole grid")
+    ax0.ticklabel_format(style="sci", axis="x", scilimits=(-6, -6))
+
+    ax1.set_title("Magnitudes of overall field")
+
+    for sub_ax, field in zip(field_axes, field_dict.keys()):
+        sub_ax.hist(field_dict[field], bins=100)
+        sub_ax.set_title(f"Magnitudes of {field}")
+        sub_ax.set_xlabel("Field strength (T)")
+        sub_ax.set_ylabel("Frequency")
+        sub_ax.grid()
+        sub_ax.ticklabel_format(style="sci", axis="x", scilimits=(-3, -3))
+    # Add legend
+    plt.tight_layout(pad=1)
+    plt.savefig(f"data/{RUN_NAME}/{GRAPH_NAME}.png")
+    # print(f"Actual width: {random_width}")
+    print(f"Calculated width: {popt} +- {pcov}")
 # =============================================================================
 # DATA SAVE
 # =============================================================================

@@ -89,5 +89,18 @@ class Ensemble():
             end = time.time()
             print(f"Time taken: {end - start}")
 
+    def add_field(self, add_field):
+        if hasattr(self, "fields"):
+            for i, f in enumerate(self.fields):
+                self.fields[i] = np.add(f, add_field)
+        else:
+            self.fields = np.array([add_field for _ in range(self.N)])
+
+        magnitudes = np.array([func.get_mag(f) for f in self.fields])
+        self.field_dict = {"total": magnitudes,
+                           "x": self.fields[:, 0],
+                           "y": self.fields[:, 1],
+                           "z": self.fields[:, 2]}
+
     def load_fields(self):
         self.fields, self.field_dict = func.load_fields(self.run_name)
