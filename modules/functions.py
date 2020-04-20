@@ -132,7 +132,7 @@ def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
     overall = np.nansum(particles.relaxations, axis=0) / particles.N
 
     # CURVE FIT
-    popt, pcov = curve_fit(static_GKT, Muon.TIME_SCALE, overall, p0=1e-4)
+    popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY, overall, p0=1e-4)
 
     # Setup subplots
     ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
@@ -145,14 +145,14 @@ def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
     # Plot individual lines if N is small
     if len(particles.relaxations) < 100:
         for i in range(N):
-            ax0.plot(Muon.TIME_SCALE, particles.relaxations[i], alpha=0.5, lw=0.5)
+            ax0.plot(Muon.TIME_ARRAY, particles.relaxations[i], alpha=0.5, lw=0.5)
 
     # Plot overall relaxation
-    ax0.plot(Muon.TIME_SCALE, overall, lw=2, c="k", alpha=0.7, label="Model")
-    ax0.plot(Muon.TIME_SCALE, static_GKT(Muon.TIME_SCALE, *popt), c="r", label="Curve fit")
+    ax0.plot(Muon.TIME_ARRAY, overall, lw=2, c="k", alpha=0.7, label="Model")
+    ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
 
     ax0.legend(loc="upper right")
-    ax0.set_xlim(0, Muon.TIME_SCALE[-1])
+    ax0.set_xlim(0, Muon.TIME_ARRAY[-1])
     ax0.set_xlim(0, 20e-6)
     ax0.grid()
     ax0.set_title("Relaxation function from dipole grid")

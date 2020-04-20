@@ -26,20 +26,19 @@ else:  # Calculate and save grid and ensemble
                      "x_mean": 0, "y_mean": 0, "z_mean": 100e-6}
     island_grid = Grid()
     RUN_NAME = island_grid.run_name
-    particles = Ensemble(N=NUM_MUONS, spread_values=SPREAD_VALUES, run_name=RUN_NAME)
+    particles = Ensemble(N=NUM_MUONS, loc_spread_values=SPREAD_VALUES, run_name=RUN_NAME)
     particles.set_generic("spin_dir", [1, 0, 0])
     particles.calculate_fields(island_grid)
     particles.load_fields()
 
 
-fields, field_dict = func.load_fields(RUN_NAME)
 # Get each muons polarisation
-particles.set_relaxations(fields)
+particles.set_relaxations(particles.fields)
 # Normalise sum
 overall = np.nansum(particles.relaxations, axis=0) / particles.N
 
 # CURVE FIT
-popt, pcov = curve_fit(static_GKT, Muon.TIME_SCALE, overall, p0=1e-4)
+popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY, overall, p0=1e-4)
 
 
 # Setup subplots
@@ -53,14 +52,14 @@ field_axes = (ax1, ax2, ax3, ax4)
 # Plot individual lines if N is small
 if len(particles.relaxations) < 100:
     for i in range(N):
-        ax0.plot(Muon.TIME_SCALE, particles.relaxations[i], alpha=0.5, lw=0.5)
+        ax0.plot(Muon.TIME_ARRAY, particles.relaxations[i], alpha=0.5, lw=0.5)
 
 # Plot overall relaxation
-ax0.plot(Muon.TIME_SCALE, overall, lw=2, c="k", alpha=0.7, label="Model")
-ax0.plot(Muon.TIME_SCALE, static_GKT(Muon.TIME_SCALE, *popt), c="r", label="Curve fit")
+ax0.plot(Muon.TIME_ARRAY, overall, lw=2, c="k", alpha=0.7, label="Model")
+ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
 
 ax0.legend(loc="upper right")
-ax0.set_xlim(0, Muon.TIME_SCALE[-1])
+ax0.set_xlim(0, Muon.TIME_ARRAY[-1])
 ax0.set_xlim(0, 20e-6)
 ax0.grid()
 ax0.set_title("Relaxation function from dipole grid")
@@ -68,8 +67,8 @@ ax0.ticklabel_format(style="sci", axis="x", scilimits=(-6, -6))
 
 ax1.set_title("Magnitudes of overall field")
 
-for sub_ax, field in zip(field_axes, field_dict.keys()):
-    sub_ax.hist(field_dict[field], bins=100)
+for sub_ax, field in zip(field_axes, particles.field_dict.keys()):
+    sub_ax.hist(particles.field_dict[field], bins=100)
     sub_ax.set_title(f"Magnitudes of {field}")
     sub_ax.set_xlabel("Field strength (T)")
     sub_ax.set_ylabel("Frequency")

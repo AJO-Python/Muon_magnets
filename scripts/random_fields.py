@@ -14,7 +14,7 @@ RUN_NAME = "random_fields"
 NUM_MUONS = 20_000
 SPREAD_VALUES = {"x_width": 10e-6, "y_width": 10e-6, "z_width": 10e-6,
                  "x_mean": 0, "y_mean": 0, "z_mean": 0}
-particles = Ensemble(N=NUM_MUONS, spread_values=SPREAD_VALUES, run_name=RUN_NAME)
+particles = Ensemble(N=NUM_MUONS, loc_spread_values=SPREAD_VALUES, run_name=RUN_NAME)
 
 fields = np.random.normal(0, 1e-3, size=(NUM_MUONS, 3))
 

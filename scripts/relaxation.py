@@ -31,7 +31,7 @@ relaxations = np.array([p.full_relaxation(fields[i], decay=False) for i, p in en
 # Normalise sum
 overall = np.nansum(relaxations, axis=0) / N
 
-popt, pcov = curve_fit(static_GKT, Muon.TIME_SCALE, overall, p0=1e-4)
+popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY, overall, p0=1e-4)
 
 # Setup subplots
 ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
@@ -44,14 +44,14 @@ field_axes = (ax1, ax2, ax3, ax4)
 # Plot individual lines if N is small
 if len(relaxations) < 100:
     for i in range(len(relaxations)):
-        ax0.plot(Muon.TIME_SCALE, relaxations[i], alpha=0.5, lw=0.5)
+        ax0.plot(Muon.TIME_ARRAY, relaxations[i], alpha=0.5, lw=0.5)
 
 # Plot overall relaxation
-ax0.plot(Muon.TIME_SCALE, overall, lw=2, c="k", alpha=0.7, label="Model")
-ax0.plot(Muon.TIME_SCALE, static_GKT(Muon.TIME_SCALE, *popt), c="r", label="Curve fit")
+ax0.plot(Muon.TIME_ARRAY, overall, lw=2, c="k", alpha=0.7, label="Model")
+ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
 
 ax0.legend(loc="upper right")
-ax0.set_xlim(0, Muon.TIME_SCALE[-1])
+ax0.set_xlim(0, Muon.TIME_ARRAY[-1])
 ax0.grid()
 ax0.set_title("Zero field relaxation function")
 

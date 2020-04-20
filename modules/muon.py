@@ -8,10 +8,11 @@ class Muon:
     MASS = 1.883531627e-28
     MASS_ENERGY = 105.6583745e6
     HALFLIFE = 2.2969811e-6
-    GYRO_RATIO = 2 * np.pi * 135.5e6
+    GYRO_RATIO = 851.615e6
     DECAY_CONST = np.log(2) / HALFLIFE
     TIME_RESOLUTION = 2000
-    TIME_SCALE = np.linspace(1e-9, 100e-6, TIME_RESOLUTION)
+    TIME_SCALE = 100e-6
+    TIME_ARRAY = np.linspace(0, TIME_SCALE, TIME_RESOLUTION)
 
     def __init__(self, **kwargs):
         """
@@ -152,12 +153,12 @@ class Muon:
         self.set_spin_field_angle(field)
         theta = self.spin_field_angle
         H = func.get_mag(field)
-        t = Muon.TIME_SCALE
+        t = Muon.TIME_ARRAY
         y = Muon.GYRO_RATIO
         polarisation = np.cos(theta) ** 2 + (np.sin(theta) ** 2) * np.cos(y * H * t)
         # Set polarisation to zero if muon has decayed
         if decay:
-            polarisation = np.where(Muon.TIME_SCALE < self.lifetime, polarisation, np.nan)
+            polarisation = np.where(Muon.TIME_ARRAY < self.lifetime, polarisation, np.nan)
         return polarisation
 
 if __name__ == "__main__":
