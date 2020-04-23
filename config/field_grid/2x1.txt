@@ -1,0 +1,9 @@
+width=7e-6
+height=4e-6
+xspacing=3e-6
+yspacing=3e-6
+xsize=1.6e-6
+ysize=700e-9
+strength=8e-16
+angle=90
+random_orientation=False
