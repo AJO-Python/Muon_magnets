@@ -58,6 +58,8 @@ def get_limits(arr):
     :return: min and max for plotting arr
     """
     spread = max(arr) - min(arr)
+    if spread == 0:
+        spread = max(arr)
     small = min(arr) - spread / 20
     big = max(arr) + spread / 20
     return (small, big)

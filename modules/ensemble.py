@@ -79,7 +79,8 @@ class Ensemble():
             self.relaxations = np.array(
                 [p.full_relaxation(self.fields[i], decay=False) for i, p in enumerate(self.muons)])
         else:
-            self.relaxations = np.array([p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
+            self.relaxations = np.array(
+                [p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
 
         self.overall_relax = np.mean(self.relaxations, axis=0)
 

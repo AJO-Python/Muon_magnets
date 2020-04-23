@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 import scipy as sci
 
 from modules.muon import Muon
-from modules.dipole_grid import make_dipole_grid
 from modules.functions import load_run, get_mag, save_array
-from modules.field_grid import calc_field_grid
+from modules.old_field_grid import calc_field_grid
 
 def spread_muons(run_name, N, dipole_array, max_loc, spread=""):
     """

@@ -13,7 +13,6 @@ class Island(Dipole):
 
     def __init__(self,
                  orientation=0,
-                 coord=[0, 0, 0],
                  strength=1e-8,
                  size=(1e-8, 2e-8),
                  location=[0, 0, 0]):
@@ -27,7 +26,7 @@ class Island(Dipole):
         :param tuple (float, float) location: Location of island
         :param dict kwargs: attributes and their values to set
         """
-        super().__init__(orientation, coord, strength)
+        super().__init__(orientation, strength)
         self.size = np.asarray(size)
         self.area = self.size[0] * self.size[1]
         self.location = location
@@ -79,7 +78,6 @@ class Island(Dipole):
 
     def get_moment_arrow(self):
         arrow = Arrow(x=self.location[0], y=self.location[1],
-                      # dx=self.moment[0] * 10, dy=self.moment[1] * 10,
                       dx=self.size[0] * np.cos(self.orientation_r) / 2,
                       dy=self.size[1] * np.sin(self.orientation_r) / 2,
                       width=func.get_mag(self.size) / 2,
@@ -95,7 +93,7 @@ class Island(Dipole):
         :return: Rectangle patch
         """
         if not hasattr(self, "line_width"):
-            self.line_width = 0.1
+            self.line_width = 1
 
         rectangle = Rectangle(xy=(0, 0),
                               width=self.size[0],

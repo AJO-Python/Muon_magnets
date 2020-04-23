@@ -11,7 +11,6 @@ import modules.functions as func
 
 def check_calculations():
     island = Island(orientation=0,
-                    coord=[0, 0],
                     strength=8e-8,
                     size=(0.00002, 0.00002),
                     location=[0, 0])
@@ -53,7 +52,6 @@ Test field drops as expected
 
 def check_muon_dipoles():
     island = Island(orientation=0,
-                    coord=[0, 0, 0],
                     strength=1e-8,
                     size=(0.00002, 0.00002),
                     location=[0, 0, 0])
@@ -178,7 +176,6 @@ def cubic(x, m):
 def check_relaxation():
 
     island = Island(orientation=0,
-                    coord=[0, 0],
                     strength=1e-8,
                     size=(0.00002, 0.00002),
                     location=[0, 0])

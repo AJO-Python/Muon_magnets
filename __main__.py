@@ -33,7 +33,7 @@ else:  # Calculate and save grid and ensemble
 
 
 # Get each muons polarisation
-particles.set_relaxations(particles.fields)
+particles.set_relaxations()
 # Normalise sum
 overall = np.nansum(particles.relaxations, axis=0) / particles.N
 
