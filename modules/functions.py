@@ -34,9 +34,11 @@ def get_angle(vec1, vec2):
     :rtype: float
     :return: Angle between $vec1 and $vec2 in radians {-pi/2, pi/2}
     """
-    dot = sum(x * y for x, y in zip(vec1, vec2))
-    mag1, mag2 = get_mag(vec1), get_mag(vec2)
-    return np.arccos(dot / (mag1 * mag2))
+    unit1 = get_unit_vector(vec1)
+    unit2 = get_unit_vector(vec2)
+    # dot = sum(x * y for x, y in zip(vec1, vec2))
+    # mag1, mag2 = get_mag(vec1), get_mag(vec2)
+    return np.arccos(np.clip(np.dot(unit1, unit2), -1, 1))
 
 
 def normalise(arr):
