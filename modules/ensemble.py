@@ -82,7 +82,7 @@ class Ensemble():
             self.relaxations = np.array(
                 [p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
 
-        self.overall_relax = np.mean(self.relaxations, axis=0)
+        self.overall_relax = np.mean(self.relaxations, axis=0, dtype=np.float64)
 
     def calculate_fields(self, grid, silent=False):
 
@@ -113,6 +113,7 @@ class Ensemble():
                            "z": self.fields[:, 2]}
 
     def random_fields(self, width=100e-6):
+        self.field_width = width
         self.fields = np.random.normal(loc=0, scale=width, size=(self.N, 3))
         self.magnitudes = np.array([func.get_mag(f) for f in self.fields])
         self.create_field_dict()

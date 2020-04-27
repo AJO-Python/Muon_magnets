@@ -66,7 +66,7 @@ class Dipole():
         return other.location - self.location
 
     def fancy_mag_field(self, r):
-        r0 = self.location
+        r0 = np.array(self.location)
         m = self.moment
 
         R = np.subtract(np.transpose(r), r0).T
@@ -77,11 +77,10 @@ class Dipole():
         m_dot_R = np.tensordot(m, R, axes=1)
 
         # tensordot with axes=0 does a general outer product - we want no sum
-        B = 3 * m_dot_R * R / norm_R ** 5 - np.tensordot(m, 1 / norm_R ** 3, axes=0)
+        B = (3 * m_dot_R * R / (norm_R ** 5)) - (np.tensordot(m, 1 / (norm_R ** 3), axes=0))
 
         # include the physical constant
         B *= 1e-7
-        print(np.shape(B))
         return B[0], B[1], B[2]
 
 
