@@ -19,9 +19,9 @@ class Grid():
                  load_only=False):
         """
 
-        :param config_file:
-        :param str run_name: Set to overwrite previous run data
-        :param bool load_only: If True creates empty class.
+        :param str config_file: Name of file to get config parameters from
+        :param str run_name: If set will overwrite any preexisting run data
+        :param bool load_only: If True creates empty class to load data into.
         Use with Grid().loader()
         """
         self.run_name = run_name
@@ -117,13 +117,16 @@ class Grid():
                     run_name = run_name[:-2] + str(dir_count)
         self.run_name = run_name
 
+    def make_collection(self):
+        import matplotlib.collections
+        self.patches = np.array([(isle.get_outline(), isle.get_moment_arrow()) for isle in self.islands]).flatten()
+        self.collection = matplotlib.collections.PatchCollection(self.patches)
+
     def show_on_plot(self, fig=None, ax=None):
         if not fig and not ax:
             fig, ax = plt.subplots()
-
-        for isle in self.islands:
-            ax.add_patch(isle.get_moment_arrow())
-            ax.add_patch(isle.get_outline())
+        self.make_collection()
+        ax.add_collection(self.collection)
         ax.set_xlim(func.get_limits(self.locations_x))
         ax.set_ylim(func.get_limits(self.locations_y))
         ax.set_aspect("equal")
