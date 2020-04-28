@@ -12,11 +12,11 @@ class Ensemble():
     def __init__(self, N=10_000, loc_spread_values={}, run_name="", load_only=False):
         """
 
-        :param N:
-        :param dict gauss_widths: Dictionary of width values
-        :param dict means: Dictionary of mean locations
-        :param run_name:
-        :param load_only:
+        :param int N: Size of ensemble
+        :param dict loc_spread_values: Dictionary of mean and standard deviation
+                                        for location values
+        :param str run_name: File name to save to
+        :param bool load_only: If True loads data from $run_name
         """
         self.run_name = run_name
         if load_only:
@@ -124,8 +124,8 @@ class Ensemble():
     def show_on_plot(self, fig=None, ax=None, thin=1):
         if not fig and not ax:
             fig, ax = plt.subplots()
-        for muon in self.muons[::thin]:
-            ax.scatter(muon.loc[0], muon.loc[1], s=1, c="g", alpha=0.5)
+        # for muon in self.muons[::thin]:
+        ax.scatter(self.xloc, self.yloc, s=1, c="g", alpha=0.5)
         return fig, ax
 
     def plot_relax_fields(self, save=True):
