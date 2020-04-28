@@ -169,6 +169,7 @@ class Ensemble():
             sub_ax.grid()
             sub_ax.ticklabel_format(style="sci", axis="x", scilimits=(-3, -3))
         # Add legend
+        ax0.axhline(0.3)
         plt.tight_layout(pad=1)
         if save:
             plt.savefig(f"data/{self.run_name}/Relax_fields.png")

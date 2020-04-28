@@ -141,16 +141,20 @@ class Grid():
 
 
 if __name__ == "__main__":
-    num_muons = 1_000
-    #run_name = "15X15_R_0"
+    num_muons = 10_000
+    # run_name = "15X15_R_0"
     run_name = ""
     print("Making grid...")
     island_grid = Grid(run_name=run_name)
-    #island_grid = Grid(run_name=run_name, load_only=True)
+    # island_grid = Grid(run_name=run_name, load_only=True)
     print("Finished grid")
 
     print("Making ensemble...")
-    muon_ensemble = Ensemble(num_muons, run_name=island_grid.run_name)
+    width = 10e-6
+    loc_values = dict(x_width=width, y_width=width, z_width=width,
+                      x_mean=0, y_mean=0, z_mean=100e-6)
+    muon_ensemble = Ensemble(num_muons, run_name=island_grid.run_name, loc_spread_values=loc_values)
+    muon_ensemble.random_fields(width=10e-6)
     print("Finished ensemble")
 
     fig, ax = plt.subplots()

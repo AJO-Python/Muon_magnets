@@ -38,18 +38,6 @@ y_locs = field_locations["y_vals"]
 
 X, Y = np.meshgrid(x_locs, y_locs)
 
-# Ex = np.zeros(np.shape(X))
-# Ey = np.zeros_like(Ex)
-# Ez = np.zeros_like(Ex)
-# for j in range(len(X)):
-#     for i in range(len(Y)):
-#         for isle in islands:
-#             ex, ey, ez = isle.get_mag_field([X[0, j], Y[i, 0], 10e-6])
-#             Ex[i][j] += np.add(Ex[i][j], ex)
-#             Ey[i][j] += np.add(Ey[i][j], ey)
-#             Ex[i][j] += np.add(Ez[i][j], ez)
-
-
 for i, x in enumerate(x_locs):
     for j, y in enumerate(y_locs):
         for isle in islands:

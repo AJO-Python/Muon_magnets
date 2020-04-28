@@ -2,6 +2,7 @@ import numpy as np
 from scipy import integrate
 import modules.muon as mu
 
+
 def static_GKT(time, width):
     """
     :param object time: Length of time to calculate
