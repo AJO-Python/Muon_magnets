@@ -103,12 +103,7 @@ def detect_asym(Nf, Nb):
             return 1
 
 
-def format_plot(fig, max_time=20e-6):
-    fig.legend(loc="best")
-    fig.xlim(0, max_time)
-    fig.grid()
-    fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
-    fig.show()
+
 
 
 def chunk_muons(list_to_chunk, freq_per_chunk):
@@ -126,6 +121,43 @@ def chunk_muons(list_to_chunk, freq_per_chunk):
         chunks[i] = list_to_chunk[chunk_start:chunk_start + freq]
         chunk_start += freq
     return chunks
+
+
+# =============================================================================
+# PARTICLE FUNCTIONS
+# =============================================================================
+
+def set_fig_size(width, fraction=1, subplots=(1, 1)):
+    """
+    Set figure dimensions to avoid scaling in LaTeX.
+    :param float width: Document textwidth or columnwidth in pts (Set for muon report by default)
+    :param float fraction: optional, Fraction of the width which you wish the figure to occupy
+    :param tuple (int, int) subplots: Subplot dimensions of the figure
+    :returns tuple fig_dim: Dimensions of figure in inches
+    """
+    if width == "muon_paper":
+        width = 426.79134
+    # Width of figure (in pts)
+    fig_width_pt = width * fraction
+    # Convert from pt to inches
+    inches_per_pt = 1 / 72.27
+    # Golden ratio to set aesthetic figure height
+    golden_ratio = (5 ** .5 - 1) / 2
+    # Figure width in inches
+    fig_width_in = fig_width_pt * inches_per_pt
+    # Figure height in inches
+    fig_height_in = fig_width_in * golden_ratio * (subplots[0] / subplots[1])
+    fig_dim = (fig_width_in, fig_height_in)
+
+    return fig_dim
+
+
+def format_plot(fig, max_time=20e-6):
+    fig.legend(loc="best")
+    fig.xlim(0, max_time)
+    fig.grid()
+    fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+    fig.show()
 
 
 def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
@@ -148,7 +180,7 @@ def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
     field_axes = (ax1, ax2, ax3, ax4)
     # Plot individual lines if N is small
     if len(particles.relaxations) < 100:
-        for i in range(N):
+        for i in range(particles.N):
             ax0.plot(Muon.TIME_ARRAY, particles.relaxations[i], alpha=0.5, lw=0.5)
 
     # Plot overall relaxation
