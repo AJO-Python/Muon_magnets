@@ -33,6 +33,18 @@ class Ensemble():
         self.muons = np.array([Muon(loc=self.loc[i]) for i in range(self.N)])
         self.save_ensemble()
 
+    @property
+    def xloc(self):
+        return self.loc[:, 0]
+
+    @property
+    def yloc(self):
+        return self.loc[:, 1]
+
+    @property
+    def zloc(self):
+        return self.loc[:, 2]
+
     def create_locations(self):
         try:
             loc_x = np.random.normal(loc=self.loc_spread_values["x_mean"],
@@ -48,36 +60,14 @@ class Ensemble():
         except KeyError:
             self.loc = np.array([])
 
-    @property
-    def xloc(self):
-        return self.loc[:, 0]
-
-    @property
-    def yloc(self):
-        return self.loc[:, 1]
-
-    @property
-    def zloc(self):
-        return self.loc[:, 2]
-
-    def filter_in_dipoles(self, grid):
-        pass
-
-    def set_generic(self, name, value):
-        for particle in self.muons:
-            setattr(particle, name, value)
-
-    def save_ensemble(self):
-        func.save_object(self.run_name, "ensemble_obj", self.__dict__)
-
-    def loader(self, run_name):
-        params = func.load_object(run_name, "ensemble_obj")
-        self.__dict__.update(params)
-
     def set_relaxations(self, fields=[]):
         if not fields:
-            self.relaxations = np.array(
-                [p.full_relaxation(self.fields[i], decay=False) for i, p in enumerate(self.muons)])
+            try:
+                self.relaxations = np.array(
+                    [p.full_relaxation(self.fields[i], decay=False) for i, p in enumerate(self.muons)])
+            except AttributeError:
+                self.load_fields()
+                self.set_relaxations()
         else:
             self.relaxations = np.array(
                 [p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
@@ -118,40 +108,82 @@ class Ensemble():
         self.magnitudes = np.array([func.get_mag(f) for f in self.fields])
         self.create_field_dict()
 
+    def filter_in_dipoles(self, grid):
+        pass
+
+    def set_generic(self, name, value):
+        for particle in self.muons:
+            setattr(particle, name, value)
+
+    def save_ensemble(self):
+        func.save_object(self.run_name, "ensemble_obj", self.__dict__)
+
+    def loader(self, run_name):
+        params = func.load_object(run_name, "ensemble_obj")
+        self.__dict__.update(params)
+
     def load_fields(self):
-        self.fields, self.field_dict = func.load_fields(self.run_name)
+        """
+        Loads field experiences by each muon from multiprocessing calculation
+        :return: None
+        """
+        fields = func.load_run(self.run_name, files=["muon_fields"])
+        fields = np.array(fields["muon_fields"]["muon_fields"])
+        magnitudes = np.array([func.get_mag(f) for f in fields])
+        self.fields = fields
+        self.magnitudes = magnitudes
+        self.create_field_dict()
 
     def show_on_plot(self, fig=None, ax=None, thin=1):
+        """
+        Scatter plot of muon locations
+        :param object fig: matplotlib fig obj
+        :param object ax: matplotlib ax obj
+        :param thin: plots muon[::thin]
+        :return: fig, ax
+        """
         if not fig and not ax:
             fig, ax = plt.subplots()
-        # for muon in self.muons[::thin]:
-        ax.scatter(self.xloc, self.yloc, s=1, c="g", alpha=0.5)
+        ax.scatter(self.xloc[::thin], self.yloc[::thin], s=1, c="g", alpha=0.5)
         return fig, ax
 
-    def plot_relax_fields(self, save=True):
+    def plot_relax_fields(self, save=True, add_third_line=False):
+        """
+        Plots the overall relaxation for the ensemble and the field
+        distribution graphs.
+        Will plot individual relaxations if N < 100
+        :param bool save: saves figure in run folder if True
+        :param bool add_third_line: Adds a hline at y=1/3 if True
+        :return: None
+        """
         from scipy.optimize import curve_fit
         from modules.model_equations import static_GKT
 
         popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY,
                                self.overall_relax, p0=1e-4)
+        self.calculated_width = (popt, pcov[0])
 
         # Setup subplots
-        plt.figure(figsize=(12, 6))
-        ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
-        ax1 = plt.subplot2grid((2, 3), (0, 2))
-        ax2 = plt.subplot2grid((2, 3), (1, 0))
-        ax3 = plt.subplot2grid((2, 3), (1, 1))
-        ax4 = plt.subplot2grid((2, 3), (1, 2))
+        plt.figure(figsize=func.set_fig_size(width="muon_paper",
+                                             fraction=0.5,
+                                             subplots=(3, 2)))
+        ax0 = plt.subplot2grid((3, 2), (0, 0), colspan=2)
+        ax1 = plt.subplot2grid((3, 2), (1, 0))
+        ax2 = plt.subplot2grid((3, 2), (1, 1))
+        ax3 = plt.subplot2grid((3, 2), (2, 0))
+        ax4 = plt.subplot2grid((3, 2), (2, 1))
 
         field_axes = (ax1, ax2, ax3, ax4)
         # Plot individual lines if N is small
         if len(self.relaxations) < 100:
-            for i in range(N):
+            for i in range(self.N):
                 ax0.plot(Muon.TIME_ARRAY, self.relaxations[i], alpha=0.5, lw=0.5)
 
         # Plot overall relaxation
         ax0.plot(Muon.TIME_ARRAY, self.overall_relax, lw=2, c="k", alpha=0.7, label="Simulation")
         ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
+        if add_third_line:
+            ax0.axhline(1 / 3, color="k", linestyle=":", alpha=0.5, label="1/3 tail")
 
         ax0.legend(loc="upper right")
         ax0.set_xlim(0, Muon.TIME_ARRAY[-1])
@@ -169,12 +201,59 @@ class Ensemble():
             sub_ax.grid()
             sub_ax.ticklabel_format(style="sci", axis="x", scilimits=(-3, -3))
         # Add legend
-        ax0.axhline(0.3)
         plt.tight_layout(pad=1)
         if save:
-            plt.savefig(f"data/{self.run_name}/Relax_fields.png")
+            plt.savefig(f"data/{self.run_name}/Relax_fields.pdf",
+                        bbox_inches="tight",
+                        format="pdf")
         print(f"Calculated width: {float(popt):.2e} +- {float(pcov[0]):.2e}")
 
+    def plot_distribution(self, grid, save=True):
+        """
+        Plots the ensemble overlaid on the island grid
+        Plots the angular distribution of island orientations
+        :param object grid: Island()
+        :param bool save: Saves plot to run folder if True
+        :return: None
+        """
+        fig = plt.figure(figsize=func.set_fig_size(width="muon_paper",
+                                                   fraction=0.5,
+                                                   subplots=(3, 2)))
+        fig.suptitle(self.run_name)
+
+        angle_ax = plt.subplot2grid((2, 2), (1, 0), colspan=2)
+        grid_ax = plt.subplot2grid((2, 2), (0, 0))
+        XZ_dist_ax = plt.subplot2grid((2, 2), (0, 1))
+        XZ_dist_ax.set_aspect("equal")
+        grid_ax.set_aspect("equal")
+        XZ_dist_ax.ticklabel_format(style="sci", axis="both", scilimits=(-6, -6))
+        grid_ax.ticklabel_format(style="sci", axis="both", scilimits=(-6, -6))
+        grid.set_generic("line_width", 1)
+
+        # angle_ax
+        angle_ax.hist(grid.angles, bins=36)
+        angle_ax.set_xlabel("Rotation of island (degrees)")
+        angle_ax.set_ylabel("Frequency")
+        angle_ax.set_title("Angle distribution of Dipoles")
+
+        # XZ_dist_ax
+        XZ_dist_ax.scatter(self.xloc[::5], self.zloc[::5], s=1, alpha=0.5)
+        XZ_dist_ax.set_xlim(func.get_limits(self.xloc))
+        XZ_dist_ax.set_ylim(func.get_limits(self.zloc))
+        XZ_dist_ax.set_xlabel("X locations")
+        XZ_dist_ax.set_ylabel("Z locations")
+
+        # grid_ax
+        fig, grid_ax = grid.show_on_plot(fig, grid_ax)
+        fig, grid_ax = self.show_on_plot(fig, grid_ax, thin=3)
+        grid_ax.set_xlabel("X locations")
+        grid_ax.set_ylabel("Y locations")
+
+        fig.tight_layout(pad=1)
+        if save:
+            fig.savefig(f"data/{self.run_name}/visualise_distribution.pdf",
+                        bbox_inches="tight",
+                        format="pdf")
 
 if __name__ == "__main__":
     test = Ensemble(N=10)

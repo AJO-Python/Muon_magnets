@@ -7,6 +7,8 @@ class Dipole():
     Creates a dipole with a defined coordinate on a grid and a magnetic moment
     The magnetic field can be calculated at any point around dipole with
     get_mag_field()
+    The magnetic moment will always point along the along the orientation direction
+    with a magnitude = strength
     """
     count = 0
 

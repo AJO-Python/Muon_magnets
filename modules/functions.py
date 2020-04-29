@@ -148,7 +148,6 @@ def set_fig_size(width, fraction=1, subplots=(1, 1)):
     # Figure height in inches
     fig_height_in = fig_width_in * golden_ratio * (subplots[0] / subplots[1])
     fig_dim = (fig_width_in, fig_height_in)
-
     return fig_dim
 
 
@@ -159,55 +158,6 @@ def format_plot(fig, max_time=20e-6):
     fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
     fig.show()
 
-
-def plot_relaxations(particles, RUN_NAME, GRAPH_NAME, field_dict):
-    from scipy.optimize import curve_fit
-    from modules.model_equations import static_GKT
-    from modules.muon import Muon
-
-    overall = np.nansum(particles.relaxations, axis=0) / particles.N
-
-    # CURVE FIT
-    popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY, overall, p0=1e-4)
-
-    # Setup subplots
-    ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
-    ax1 = plt.subplot2grid((2, 3), (0, 2))
-    ax2 = plt.subplot2grid((2, 3), (1, 0))
-    ax3 = plt.subplot2grid((2, 3), (1, 1))
-    ax4 = plt.subplot2grid((2, 3), (1, 2))
-
-    field_axes = (ax1, ax2, ax3, ax4)
-    # Plot individual lines if N is small
-    if len(particles.relaxations) < 100:
-        for i in range(particles.N):
-            ax0.plot(Muon.TIME_ARRAY, particles.relaxations[i], alpha=0.5, lw=0.5)
-
-    # Plot overall relaxation
-    ax0.plot(Muon.TIME_ARRAY, overall, lw=2, c="k", alpha=0.7, label="Model")
-    ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
-
-    ax0.legend(loc="upper right")
-    ax0.set_xlim(0, Muon.TIME_ARRAY[-1])
-    ax0.set_xlim(0, 20e-6)
-    ax0.grid()
-    ax0.set_title("Relaxation function from dipole grid")
-    ax0.ticklabel_format(style="sci", axis="x", scilimits=(-6, -6))
-
-    ax1.set_title("Magnitudes of overall field")
-
-    for sub_ax, field in zip(field_axes, field_dict.keys()):
-        sub_ax.hist(field_dict[field], bins=100)
-        sub_ax.set_title(f"Magnitudes of {field}")
-        sub_ax.set_xlabel("Field strength (T)")
-        sub_ax.set_ylabel("Frequency")
-        sub_ax.grid()
-        sub_ax.ticklabel_format(style="sci", axis="x", scilimits=(-3, -3))
-    # Add legend
-    plt.tight_layout(pad=1)
-    plt.savefig(f"data/{RUN_NAME}/{GRAPH_NAME}.png")
-    # print(f"Actual width: {random_width}")
-    print(f"Calculated width: {popt} +- {pcov}")
 # =============================================================================
 # DATA SAVE
 # =============================================================================
@@ -310,18 +260,3 @@ def load_run(run_name, files=[]):
         print(f"Loaded locations")
 
         return dipole_data, field_data, loc_data
-
-
-def load_fields(run_name):
-    """
-    Loads field experiences by each muon from multiprocessing calculation
-    :param str run_name: run folder
-    :rtype: array, dict
-    :return: Array of fields and Dictionary contating mag, x, y, z fields for each muon
-    """
-    fields = load_run(run_name, files=["muon_fields"])
-    fields = np.array(fields["muon_fields"]["muon_fields"])
-
-    magnitudes = np.array([get_mag(f) for f in fields])
-    field_dict = {"total": magnitudes, "x": fields[:, 0], "y": fields[:, 1], "z": fields[:, 2]}
-    return fields, field_dict
