@@ -5,7 +5,7 @@ import os
 import modules.dipole as dip
 import modules.functions as func
 from modules.island import Island
-from modules.ensemble import Ensemble
+
 
 
 # noinspection PyAttributeOutsideInit
@@ -141,6 +141,7 @@ class Grid():
 
 
 if __name__ == "__main__":
+    from modules.ensemble import Ensemble
     num_muons = 10_000
     # run_name = "15X15_R_0"
     run_name = ""

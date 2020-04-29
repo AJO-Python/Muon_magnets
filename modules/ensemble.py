@@ -33,6 +33,18 @@ class Ensemble():
         self.muons = np.array([Muon(loc=self.loc[i]) for i in range(self.N)])
         self.save_ensemble()
 
+    @property
+    def xloc(self):
+        return self.loc[:, 0]
+
+    @property
+    def yloc(self):
+        return self.loc[:, 1]
+
+    @property
+    def zloc(self):
+        return self.loc[:, 2]
+
     def create_locations(self):
         try:
             loc_x = np.random.normal(loc=self.loc_spread_values["x_mean"],
@@ -48,50 +60,19 @@ class Ensemble():
         except KeyError:
             self.loc = np.array([])
 
-    @property
-    def xloc(self):
-        return self.loc[:, 0]
-
-    @property
-    def yloc(self):
-        return self.loc[:, 1]
-
-    @property
-    def zloc(self):
-        return self.loc[:, 2]
-
-    def filter_in_dipoles(self, grid):
-        pass
-
-    def set_generic(self, name, value):
-        for particle in self.muons:
-            setattr(particle, name, value)
-
-    def save_ensemble(self):
-        func.save_object(self.run_name, "ensemble_obj", self.__dict__)
-
-    def loader(self, run_name):
-        params = func.load_object(run_name, "ensemble_obj")
-        self.__dict__.update(params)
-
-    def set_relaxations(self, fields=[]):
-        if not fields:
-            self.relaxations = np.array(
-                [p.full_relaxation(self.fields[i], decay=False) for i, p in enumerate(self.muons)])
-        else:
-            self.relaxations = np.array(
-                [p.full_relaxation(fields[i], decay=False) for i, p in enumerate(self.muons)])
-
+    def set_relaxations(self):
+        self.relaxations = np.array(
+            [p.full_relaxation(decay=False) for p in self.muons])
         self.overall_relax = np.mean(self.relaxations, axis=0, dtype=np.float64)
 
     def calculate_fields(self, grid, silent=False):
 
         if silent:
-            MP_fields(self.run_name, self.muons, grid.islands)
+            MP_fields(self, grid, silent=True)
         else:
             print("Starting multiprocessing...")
             start = time.time()
-            MP_fields(self.run_name, self.muons, grid.islands)
+            MP_fields(self, grid)
             end = time.time()
             print(f"Time taken: {end - start}")
 
@@ -118,8 +99,25 @@ class Ensemble():
         self.magnitudes = np.array([func.get_mag(f) for f in self.fields])
         self.create_field_dict()
 
+    def chunk_for_processing(self):
+        self.chunks = np.array_split(self.muons, 16)
+
+    def filter_in_dipoles(self, grid):
+        pass
+
+    def set_generic(self, name, value):
+        for particle in self.muons:
+            setattr(particle, name, value)
+
+    def save_ensemble(self):
+        func.save_object(self.run_name, "ensemble_obj", self.__dict__)
+
     def load_fields(self):
         self.fields, self.field_dict = func.load_fields(self.run_name)
+
+    def loader(self, run_name):
+        params = func.load_object(run_name, "ensemble_obj")
+        self.__dict__.update(params)
 
     def show_on_plot(self, fig=None, ax=None, thin=1):
         if not fig and not ax:
@@ -136,7 +134,7 @@ class Ensemble():
                                self.overall_relax, p0=1e-4)
 
         # Setup subplots
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=func.set_fig_size(subplots=(3, 2)))
         ax0 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
         ax1 = plt.subplot2grid((2, 3), (0, 2))
         ax2 = plt.subplot2grid((2, 3), (1, 0))
@@ -146,7 +144,7 @@ class Ensemble():
         field_axes = (ax1, ax2, ax3, ax4)
         # Plot individual lines if N is small
         if len(self.relaxations) < 100:
-            for i in range(N):
+            for i in range(self.N):
                 ax0.plot(Muon.TIME_ARRAY, self.relaxations[i], alpha=0.5, lw=0.5)
 
         # Plot overall relaxation

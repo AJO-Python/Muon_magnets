@@ -103,9 +103,6 @@ def detect_asym(Nf, Nb):
             return 1
 
 
-
-
-
 def chunk_muons(list_to_chunk, freq_per_chunk):
     """
     :param list list_to_chunk: A sorted list of objects to split into chunks

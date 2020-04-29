@@ -143,16 +143,20 @@ class Muon:
             # Catch error if this is first field muon "feels"
             self.field = dipole.get_mag_field(self.loc)
 
-    def full_relaxation(self, field, decay=True):
+    def feel_dipole_grid(self, grid):
+        new_field = np.array([isle.get_mag_field(self.loc) for isle in grid.islands])
+        self.field = np.sum(new_field, axis=1)
+
+    def full_relaxation(self, decay=True):
         """
         Returns the polarisation of the muon against time
 
         :rtype: array
         :return: Polarisation over TIME_SCALE
         """
-        self.set_spin_field_angle(field)
+        self.set_spin_field_angle(self.field)
         theta = self.spin_field_angle
-        H = func.get_mag(field)
+        H = func.get_mag(self.field)
         t = Muon.TIME_ARRAY
         y = Muon.GYRO_RATIO
         polarisation = np.cos(theta) ** 2 + (np.sin(theta) ** 2) * np.cos(y * H * t)
