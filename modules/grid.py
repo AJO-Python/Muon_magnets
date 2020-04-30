@@ -9,7 +9,7 @@ from modules.ensemble import Ensemble
 
 
 # noinspection PyAttributeOutsideInit
-class Grid():
+class Grid:
     """
     Creates a width x height grid that can store objects at all points.
     """
@@ -28,8 +28,8 @@ class Grid():
         if load_only:
             self.loader(self.run_name)
             return
-
-        parameters = func.load_config(config_file)
+        self.config_file = config_file
+        parameters = func.load_config(self.config_file)
         for key, value in parameters.items():
             self.__setattr__(key, value)
 
@@ -39,11 +39,11 @@ class Grid():
         self.set_count()
         self.set_locations()
         self.set_angles()
-        if not run_name:
-            self.set_run_name()
-
         print("Creating islands...")
         self.create_islands()
+        if not run_name:
+            self.set_run_name()
+        self.save_config()
         print("Saving islands...")
         self.save_grid()
         print("Finished.")
@@ -132,6 +132,14 @@ class Grid():
         ax.set_aspect("equal")
         return fig, ax
 
+    def save_config(self):
+        cwd = os.getcwd()
+        save_folder = f"data/{self.run_name}/grid_config.txt"
+        config_location = f"config/{self.config_file}.txt"
+        save_path = os.path.join(cwd, save_folder)
+        copy_path = os.path.join(cwd, config_location)
+        os.popen(f"cp {copy_path} {save_path}")
+
     def save_grid(self):
         func.save_object(self.run_name, "grid_obj", self.__dict__)
 
@@ -141,30 +149,7 @@ class Grid():
 
 
 if __name__ == "__main__":
-    num_muons = 10_000
-    # run_name = "15X15_R_0"
     run_name = ""
     print("Making grid...")
     island_grid = Grid(run_name=run_name)
-    # island_grid = Grid(run_name=run_name, load_only=True)
-    print("Finished grid")
 
-    print("Making ensemble...")
-    width = 10e-6
-    loc_values = dict(x_width=width, y_width=width, z_width=width,
-                      x_mean=0, y_mean=0, z_mean=100e-6)
-    muon_ensemble = Ensemble(num_muons, run_name=island_grid.run_name, loc_spread_values=loc_values)
-    muon_ensemble.random_fields(width=10e-6)
-    print("Finished ensemble")
-
-    fig, ax = plt.subplots()
-
-    print("Plotting grid...")
-    fig, ax = island_grid.show_on_plot(fig, ax)
-    print("Finished plotting grid")
-
-    print("Plotting ensemble...")
-    fig, ax = muon_ensemble.show_on_plot(fig, ax)
-    print("Finished plotting ensemble...")
-    ax.ticklabel_format(style="sci", axis="both", scilimits=(-6, -6))
-    plt.show()

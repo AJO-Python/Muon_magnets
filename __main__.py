@@ -12,7 +12,7 @@ from modules.multi_process import MP_fields
 from modules.model_equations import static_GKT
 
 #########################################
-LOAD_OBJECTS = True
+LOAD_OBJECTS = False
 
 RUN_NAME = "20X20_R_0"
 

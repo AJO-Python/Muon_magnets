@@ -118,6 +118,14 @@ class Ensemble():
     def save_ensemble(self):
         func.save_object(self.run_name, "ensemble_obj", self.__dict__)
 
+    def save_config(self):
+        cwd = os.getcwd()
+        save_folder = f"data/{self.run_name}/grid_config.txt"
+        config_location = f"config/{self.config_file}.txt"
+        save_path = os.path.join(cwd, save_folder)
+        copy_path = os.path.join(cwd, config_location)
+        os.popen(f"cp {copy_path} {save_path}")
+
     def loader(self, run_name):
         params = func.load_object(run_name, "ensemble_obj")
         self.__dict__.update(params)
