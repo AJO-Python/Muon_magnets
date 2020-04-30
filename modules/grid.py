@@ -2,13 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-import modules.dipole as dip
 import modules.functions as func
 from modules.island import Island
-from modules.ensemble import Ensemble
-
-
 # noinspection PyAttributeOutsideInit
+
 class Grid:
     """
     Creates a width x height grid that can store objects at all points.

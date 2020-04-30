@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import modules.functions as func
+# noinspection PyAttributeOutsideInit
 
 class Dipole():
     """

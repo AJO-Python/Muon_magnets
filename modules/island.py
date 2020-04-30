@@ -7,6 +7,7 @@ from matplotlib.patches import Rectangle, Arrow
 from modules.dipole import Dipole
 import modules.functions as func
 
+# noinspection PyAttributeOutsideInit
 
 class Island(Dipole):
     counter = 0
