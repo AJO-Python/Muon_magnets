@@ -26,7 +26,7 @@ else:  # Calculate and save grid and ensemble
                      "x_mean": 0, "y_mean": 0, "z_mean": 100e-6}
     island_grid = Grid()
     RUN_NAME = island_grid.run_name
-    particles = Ensemble(N=NUM_MUONS, loc_spread_values=SPREAD_VALUES, run_name=RUN_NAME)
+    particles = Ensemble(N=NUM_MUONS, run_name=RUN_NAME)
     # particles.set_generic("spin_dir", [1, 0, 0])
     particles.calculate_fields(island_grid)
     particles.load_fields()

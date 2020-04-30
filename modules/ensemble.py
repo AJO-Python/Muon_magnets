@@ -1,20 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import os
 
 import modules.functions as func
 from modules.muon import Muon
 from modules.multi_process import MP_fields
 
 
+# noinspection PyAttributeOutsideInit
+
 class Ensemble():
 
-    def __init__(self, N=10_000, loc_spread_values={}, run_name="", load_only=False):
+    def __init__(self, N=10_000, config_file="muon_ensemble_config", run_name="", load_only=False):
         """
 
         :param int N: Size of ensemble
-        :param dict loc_spread_values: Dictionary of mean and standard deviation
-                                        for location values
+        :param str config_file: File to get input parameters from
         :param str run_name: File name to save to
         :param bool load_only: If True loads data from $run_name
         """
@@ -22,12 +24,9 @@ class Ensemble():
         if load_only:
             self.loader(self.run_name)
             return
-
-        if not loc_spread_values:
-            self.loc_spread_values = dict(x_width=0, y_width=0, z_width=0,
-                                          x_mean=0, y_mean=0, z_mean=0)
-        else:
-            self.loc_spread_values = loc_spread_values
+        self.config_file = config_file
+        self.load_config()
+        self.save_config()
         self.N = N
         self.create_locations()
         self.muons = np.array([Muon(loc=self.loc[i]) for i in range(self.N)])
@@ -120,11 +119,20 @@ class Ensemble():
 
     def save_config(self):
         cwd = os.getcwd()
-        save_folder = f"data/{self.run_name}/grid_config.txt"
+        save_folder = f"data/{self.run_name}/muon_config.txt"
         config_location = f"config/{self.config_file}.txt"
         save_path = os.path.join(cwd, save_folder)
         copy_path = os.path.join(cwd, config_location)
         os.popen(f"cp {copy_path} {save_path}")
+
+    def load_config(self):
+        load_data = np.loadtxt(f"config/{self.config_file}.txt",
+                               delimiter="\n",
+                               dtype=str)
+        self.loc_spread_values = {}
+        for item in load_data:
+            name, value = item.split("=")
+            self.loc_spread_values[name] = float(value)
 
     def loader(self, run_name):
         params = func.load_object(run_name, "ensemble_obj")
@@ -264,6 +272,4 @@ class Ensemble():
                         format="pdf")
 
 if __name__ == "__main__":
-    test = Ensemble(N=10)
-    test.random_fields()
-    test.add_field(np.array([0, 0, 1]))
+    test = Ensemble(N=10, run_name="20X20_R_1")

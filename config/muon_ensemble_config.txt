@@ -1,0 +1,6 @@
+x_mean=0
+y_mean=0
+z_mean=100e-6
+x_width=10e-6
+y_width=10e-6
+z_width=10e-6
