@@ -119,14 +119,15 @@ class Grid:
         self.patches = np.array([(isle.get_outline(), isle.get_moment_arrow()) for isle in self.islands]).flatten()
         self.collection = matplotlib.collections.PatchCollection(self.patches)
 
-    def show_on_plot(self, fig=None, ax=None):
+    def show_on_plot(self, fig=None, ax=None, set_lims=True):
         if not fig and not ax:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=func.set_fig_size(width="muon_paper"))
         self.make_collection()
         ax.add_collection(self.collection)
-        ax.set_xlim(func.get_limits(self.locations_x))
-        ax.set_ylim(func.get_limits(self.locations_y))
-        ax.set_aspect("equal")
+        if set_lims:
+            ax.set_xlim(func.get_limits(self.locations_x))
+            ax.set_ylim(func.get_limits(self.locations_y))
+            ax.set_aspect("equal")
         return fig, ax
 
     def save_config(self):
