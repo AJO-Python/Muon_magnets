@@ -55,9 +55,19 @@ class Ensemble():
             loc_z = np.random.normal(loc=self.loc_spread_values["z_mean"],
                                      scale=self.loc_spread_values["z_width"],
                                      size=(self.N))
-            self.loc = np.stack([loc_x, loc_y, loc_z], axis=1)
+
         except KeyError:
-            self.loc = np.array([])
+            try:
+                width = self.loc_spread_values["width"]
+                length = self.loc_spread_values["length"]
+                height = self.loc_spread_values["height"]
+                loc_x = np.random.uniform(-width/2, width/2, size=self.N)
+                loc_y = np.random.uniform(-length / 2, length / 2, size=self.N)
+                loc_z = np.full(shape=self.N, fill_value=height)
+            except KeyError:
+                print("Problem creating muon locations in create_locations()")
+                raise
+        self.loc = np.stack([loc_x, loc_y, loc_z], axis=1)
 
     def set_relaxations(self, fields=[]):
         if not fields:
@@ -137,6 +147,7 @@ class Ensemble():
     def loader(self, run_name):
         params = func.load_object(run_name, "ensemble_obj")
         self.__dict__.update(params)
+        self.run_name = run_name  # Ensures run_name does not get overwritten
 
     def load_fields(self):
         """
@@ -159,11 +170,11 @@ class Ensemble():
         :return: fig, ax
         """
         if not fig and not ax:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=func.set_fig_size(width="muon_paper"))
         ax.scatter(self.xloc[::thin], self.yloc[::thin], s=1, c="g", alpha=0.5)
         return fig, ax
 
-    def plot_relax_fields(self, save=True, add_third_line=False):
+    def plot_relax_fields(self, save=True, **kwargs):
         """
         Plots the overall relaxation for the ensemble and the field
         distribution graphs.
@@ -175,13 +186,9 @@ class Ensemble():
         from scipy.optimize import curve_fit
         from modules.model_equations import static_GKT
 
-        popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY,
-                               self.overall_relax, p0=1e-4)
-        self.calculated_width = (popt, pcov[0])
-
         # Setup subplots
         plt.figure(figsize=func.set_fig_size(width="muon_paper",
-                                             fraction=0.5,
+                                             fraction=1,
                                              subplots=(3, 2)))
         ax0 = plt.subplot2grid((3, 2), (0, 0), colspan=2)
         ax1 = plt.subplot2grid((3, 2), (1, 0))
@@ -197,8 +204,13 @@ class Ensemble():
 
         # Plot overall relaxation
         ax0.plot(Muon.TIME_ARRAY, self.overall_relax, lw=2, c="k", alpha=0.7, label="Simulation")
-        ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
-        if add_third_line:
+        if "curve_fit" in kwargs.items():
+            popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY,
+                                   self.overall_relax, p0=1e-4)
+            self.calculated_width = (popt, pcov[0])
+            print(f"Calculated width: {float(popt):.2e} +- {float(pcov[0]):.2e}")
+            ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
+        if "add_third_line" in kwargs.items():
             ax0.axhline(1 / 3, color="k", linestyle=":", alpha=0.5, label="1/3 tail")
 
         ax0.legend(loc="upper right")
@@ -222,7 +234,6 @@ class Ensemble():
             plt.savefig(f"data/{self.run_name}/Relax_fields.pdf",
                         bbox_inches="tight",
                         format="pdf")
-        print(f"Calculated width: {float(popt):.2e} +- {float(pcov[0]):.2e}")
 
     def plot_distribution(self, grid, save=True):
         """
@@ -233,7 +244,7 @@ class Ensemble():
         :return: None
         """
         fig = plt.figure(figsize=func.set_fig_size(width="muon_paper",
-                                                   fraction=0.5,
+                                                   fraction=1,
                                                    subplots=(3, 2)))
         fig.suptitle(self.run_name)
 

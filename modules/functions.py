@@ -180,13 +180,16 @@ def save_array(run_name, file_name, **kwargs):
             raise
 
     file_path = f"data/{run_name}/{file_name}.npz"
+    if os.path.exists(file_path):
+        print("Inside delete block")
+        os.remove(file_path)
     np.savez(file_path, **kwargs)
     print(f"Saved to {file_path}")
 
 
 def save_object(run_name, file_name, obj):
     """
-    :param str filename: Will save to "Muon_magnets/data/{filename}.txt"
+    :param str filename: Will save to "Muon_magnets/data/{run_name}/{filename}.pickle"
     :param object obj: Object to save
     """
     import pickle

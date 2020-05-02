@@ -20,8 +20,9 @@ def calc_fields(*args):
 
 
 def MP_fields(folder_name, particles, dipoles,
-              chunk_size=50, silent=False, result_list=[]):
+              silent=False):
     """
+    DOES NOT PRESERVE ORDER OF INPUT MUONS TO OUTPUT FIELDS
     :param str folder_name: Folder to save to
     :param array particles: array of muons
     :param array dipoles: array of dipoles
@@ -31,7 +32,6 @@ def MP_fields(folder_name, particles, dipoles,
 
     def start():
         chunks = np.array_split(particles, 16)
-
         print("Starting pool...")
         p = Pool(processes=8)
         print("Dispatching tasks...")
@@ -58,6 +58,7 @@ def MP_fields(folder_name, particles, dipoles,
         return result_list
 
     # Main
+    result_list = []
     print("Booting up...")
     result_list = start()
     print("Saving data to file...")
