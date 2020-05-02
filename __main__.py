@@ -14,7 +14,7 @@ from modules.model_equations import static_GKT
 #########################################
 LOAD_OBJECTS = False
 
-RUN_NAME = "20X20_R_0"
+RUN_NAME = "20X20_R_2"
 
 if LOAD_OBJECTS:  # Load from file
     island_grid = Grid(run_name=RUN_NAME, load_only=True)

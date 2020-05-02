@@ -11,21 +11,32 @@ import matplotlib.pyplot as plt
 
 from modules.grid import Grid
 from modules.island import Island
+from modules.muon import Muon
+from modules.ensemble import Ensemble
+import modules.functions as func
 
-isle_1 = Island(orientation=0, location=[10e-6, 10e-6, 0], strength=8e-16, size=[1.6e-6, 700e-9])
-isle_2 = Island(orientation=0, location=[5e-6, 0, 0], strength=8e-16)
-X = np.linspace(-20e-6, 20e-6, 20)
-Y = np.copy(X)
-Z = np.copy(X)
+isle_1 = Island(orientation=0, location=[-10e-6, 0, 0], strength=2e-8, size=[1.6e-6, 700e-9])
+isle_2 = Island(orientation=180, location=[10e-6, 0, 0], strength=2e-8)
+grid = Grid.__new__(Grid)
+grid.islands = [isle_1]  # , isle_2]
 
-Bx, By, Bz = isle_1.fancy_mag_field(r=np.meshgrid(-X, Y, Z))
-# (Bx, By, Bz) += isle_2.fancy_mag_field(r=np.meshgrid(X, Y, Z))
+locs = np.linspace(-50e-6, 50e-6, 500, endpoint=True)
+particles = Ensemble.__new__(Ensemble)
+particles.loc = locs
+particles.run_name = "test"
+particles.muons = np.array([Muon(loc=np.array((0, 0, i))) for i in locs])
+particles.calculate_fields(grid)
+particles.load_fields()
+particles.set_relaxations()
 
-fig, ax = plt.subplots()
+# particles.show_on_plot()
 
-ax.streamplot(X, Y, Bx[:, :, -1], By[:, :, -1])
-ax.set_xlim(min(X), max(X))
-ax.set_ylim(min(Y), max(Y))
-ax.add_artist(isle_1.get_outline())
-ax.ticklabel_format(axis="both", style="sci", scilimits=(-6, -6))
+fig, axs = plt.subplots(4, 1)
+for ax, (key, item) in zip(axs, particles.field_dict.items()):
+    ax.plot(locs, item)
+    ax.set_ylabel("Field strength")
+    ax.set_xlabel(f"Distance ({key})")
+    ax.set_title(f"{key}-field against {key} distance")
+    ax.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
+    ax.grid()
 plt.show()
