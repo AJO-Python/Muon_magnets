@@ -197,6 +197,11 @@ class Ensemble():
         ax4 = plt.subplot2grid((3, 2), (2, 1))
 
         field_axes = (ax1, ax2, ax3, ax4)
+        if "time_limit" in kwargs.keys():
+            print("Inside time_limit changer")
+            Muon.TIME_SCALE = kwargs["time_limit"]
+            Muon.TIME_ARRAY = np.linspace(0, Muon.TIME_SCALE, Muon.TIME_RESOLUTION)
+            print(Muon.TIME_SCALE)
         # Plot individual lines if N is small
         if len(self.relaxations) < 100:
             for i in range(self.N):
@@ -204,13 +209,13 @@ class Ensemble():
 
         # Plot overall relaxation
         ax0.plot(Muon.TIME_ARRAY, self.overall_relax, lw=2, c="k", alpha=0.7, label="Simulation")
-        if "curve_fit" in kwargs.items():
+        if "curve_fit" in kwargs.keys():
             popt, pcov = curve_fit(static_GKT, Muon.TIME_ARRAY,
                                    self.overall_relax, p0=1e-4)
             self.calculated_width = (popt, pcov[0])
             print(f"Calculated width: {float(popt):.2e} +- {float(pcov[0]):.2e}")
             ax0.plot(Muon.TIME_ARRAY, static_GKT(Muon.TIME_ARRAY, *popt), c="r", label="Curve fit")
-        if "add_third_line" in kwargs.items():
+        if "add_third_line" in kwargs.keys():
             ax0.axhline(1 / 3, color="k", linestyle=":", alpha=0.5, label="1/3 tail")
 
         ax0.legend(loc="upper right")
