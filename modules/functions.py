@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from modules.grid import Grid
+from modules.ensemble import Ensemble
+
+
 # =============================================================================
 # VECTOR FUNCTIONS
 # =============================================================================
@@ -53,6 +57,9 @@ def normalise(arr):
     return arr / norm
 
 
+# =============================================================================
+# Plotting
+# =============================================================================
 def get_limits(arr):
     """
     :param array arr: Data to get plotting limits for
@@ -76,56 +83,6 @@ def make_fancy_plot(fig, ax):
     ax.xaxis.set_minor_locator(AutoMinorLocator(5))
     return fig, ax
 
-
-# =============================================================================
-# PARTICLE FUNCTIONS
-# =============================================================================
-def detect_asym(Nf, Nb):
-    """
-    :param int Nf: Number of counts in forward detector
-    :param int Nb: Number of counts in backward detector
-    :rtype: float
-    :return: Asymmetry
-    """
-    # Catching and fixing negative detection
-    if Nf < 0 or Nb < 0:
-        print("Negative dectection is not possible. Check func.asym()")
-        print("Converting to abs(value) now...")
-        Nf = abs(Nf)
-        Nb = abs(Nb)
-
-    try:
-        return (Nf - Nb) / (Nb + Nf)
-    except ZeroDivisionError:
-        if Nf == 0 and Nb == 0:
-            return 0
-        else:
-            return 1
-
-
-
-
-
-def chunk_muons(list_to_chunk, freq_per_chunk):
-    """
-    :param list list_to_chunk: A sorted list of objects to split into chunks
-    :param list freq_per_chunk: A list of counts per bin for $list_to_chunk
-    :rtype: array
-    :return: Array made from $list_to_chunk split into "freq_per_chunk" length chunks
-    Creates list of specific muons decaying for each time step
-    """
-    chunks = np.zeros_like(freq_per_chunk, dtype="object")
-    chunk_start = 0
-    for i, freq in enumerate(freq_per_chunk):
-        freq = int(freq)
-        chunks[i] = list_to_chunk[chunk_start:chunk_start + freq]
-        chunk_start += freq
-    return chunks
-
-
-# =============================================================================
-# PARTICLE FUNCTIONS
-# =============================================================================
 
 def set_fig_size(width, fraction=1, subplots=(1, 1)):
     """
@@ -151,13 +108,30 @@ def set_fig_size(width, fraction=1, subplots=(1, 1)):
     return fig_dim
 
 
-def format_plot(fig, max_time=20e-6):
-    fig.legend(loc="best")
-    fig.xlim(0, max_time)
-    fig.grid()
-    fig.ticklabel_format(axis="x", style="sci", scilimits=(-6, -6))
-    fig.show()
+# =============================================================================
+# Multiple runs
+# =============================================================================
+def setup_run_save(dipole_configs, muon_configs, num_muons=20000):
+    """
 
+    :param dipole_configs:
+    :param muon_configs:
+    :param num_muons:
+    :return:
+    """
+    for d_file, m_file in zip(dipole_configs, muon_configs):
+        island_grid = Grid(config_file=d_file)
+        RUN_NAME = island_grid.run_name
+        particles = Ensemble(N=num_muons,
+                             run_name=RUN_NAME,
+                             config_file=m_file)
+        # particles.set_generic("spin_dir", [1, 0, 0])
+        particles.calculate_fields(island_grid)
+        particles.load_fields()
+        particles.set_relaxations()
+        particles.save_ensemble()
+        particles.plot_relax_fields(save=True)
+        particles.plot_distribution(grid=island_grid, save=True)
 # =============================================================================
 # DATA SAVE
 # =============================================================================
