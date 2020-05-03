@@ -113,11 +113,11 @@ def set_fig_size(width, fraction=1, subplots=(1, 1)):
 # =============================================================================
 def setup_run_save(dipole_configs, muon_configs, num_muons=20000):
     """
-
-    :param dipole_configs:
-    :param muon_configs:
-    :param num_muons:
-    :return:
+    Sets up and saves results for runs determined by input config files
+    :param list (str) dipole_configs: List of configuration files for dipoles grid
+    :param list (str) muon_configs: list of config files for ensemble
+    :param int num_muons: Number of muons in ensemble
+    :return: None
     """
     for d_file, m_file in zip(dipole_configs, muon_configs):
         island_grid = Grid(config_file=d_file)
